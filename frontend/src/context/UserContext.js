@@ -192,7 +192,7 @@ export const UserProvider = ({ children }) => {
 
   const setPregnancyDates = (startDate, dueDate) => {
     const start = new Date(startDate);
-    const due = new Date(dueDate);
+    // const due = new Date(dueDate);
     const today = new Date();
     
     // Calculate current week

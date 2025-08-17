@@ -4,10 +4,85 @@ const helmet = require('helmet');
 const compression = require('compression');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
+const axios = require('axios')
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+// Keyword to category mapping
+
+
+const categories = {
+  pregnancy: ['pregnancy', 'ubuzima', "ubw'abana"],
+  emergency: ['emergency', 'ingenzi', 'amaraso'],
+  nutrition: ['nutrition', 'ibiryo', 'food']
+};
+
+
+// Category to trusted sources mapping
+
+const sources = {
+  pregnancy: [
+    'https://www.who.int/data/gho/info/indicator-metadata-registry/imr-details/3323', // example
+    'https://www.moh.gov.rw/pregnancy-guidelines' // hypothetical Rwanda MoH endpoint
+  ],
+  emergency: [
+    'https://www.moh.gov.rw/emergency-guidelines', // hypothetical
+    'https://www.cdc.gov/emergency-preparedness'
+  ],
+  nutrition: [
+    'https://www.who.int/news-room/fact-sheets/detail/healthy-diet'
+  ]
+};
+
+
+// Predefined fallback messages
+const fallbackResponses = {
+  rw: {
+    pregnancy: 'Ubusanzwe ubuzima bwawe bwiza. Reba ko ufata vitamini zawe buri munsi kandi ujya kwa muganga.',
+    emergency: 'Ibi ni ibibazo by\'ingenzi! Ijya kwa muganga vuba cyane cyane niba ufite amaraso cyangwa ububabare.',
+    nutrition: 'Fata ibiryo byuzuye amatungo, imboga, n\'imbuto. Reba ko unywa amazi menshi.',
+    default: 'Nshobora kugufasha kugenzura ubuzima bwawe. Vuga ibibazo byawe cyangwa ibyo ushaka kumenya.'
+  },
+  en: {
+    pregnancy: 'Your pregnancy is going well. Make sure to take your vitamins daily and attend regular checkups.',
+    emergency: 'These are emergency symptoms! Go to the hospital immediately, especially if you have bleeding or severe pain.',
+    nutrition: 'Eat a balanced diet with proteins, vegetables, and fruits. Make sure to drink plenty of water.',
+    default: 'I can help you monitor your health. Tell me your concerns or what you want to know.'
+  }
+};
+
+
+
+
+// Detect category based on keywords
+function detectCategory(message) {
+  const lower = message.toLowerCase();
+  for (const [cat, keywords] of Object.entries(categories)) {
+    if (keywords.some(word => lower.includes(word))) return cat;
+  }
+  return 'default';
+}
+
+// Fetch content from trusted sources
+async function fetchFromSources(category) {
+  const urls = sources[category] || [];
+  for (const url of urls) {
+    try {
+      const resp = await axios.get(url);
+      if (resp.data && resp.data.summary) return resp.data.summary; // adjust depending on API
+      if (resp.data && typeof resp.data === 'string') return resp.data;
+    } catch (e) {
+      console.warn(`Failed fetching from ${url}: ${e.message}`);
+      continue;
+    }
+  }
+  return null;
+}
+
+
+
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/maternal-health', {
@@ -43,54 +118,45 @@ app.get('/health', (req, res) => {
 });
 
 // Chat endpoint
-app.post('/api/chat', (req, res) => {
+app.post('/api/chat', async (req, res) => {
   try {
     const { message, language = 'rw' } = req.body;
-    
-    // Mock response system - replace with actual AI integration
-    const responses = {
-      rw: {
-        'pregnancy': 'Ubusanzwe ubuzima bwawe bwiza. Reba ko ufata vitamini zawe buri munsi kandi ujya kwa muganga.',
-        'emergency': 'Ibi ni ibibazo by\'ingenzi! Ijya kwa muganga vuba cyane cyane niba ufite amaraso cyangwa ububabare.',
-        'nutrition': 'Fata ibiryo byuzuye amatungo, imboga, n\'imbuto. Reba ko unywa amazi menshi.',
-        'default': 'Nshobora kugufasha kugenzura ubuzima bwawe. Vuga ibibazo byawe cyangwa ibyo ushaka kumenya.'
-      },
-      en: {
-        'pregnancy': 'Your pregnancy is going well. Make sure to take your vitamins daily and attend regular checkups.',
-        'emergency': 'These are emergency symptoms! Go to the hospital immediately, especially if you have bleeding or severe pain.',
-        'nutrition': 'Eat a balanced diet with proteins, vegetables, and fruits. Make sure to drink plenty of water.',
-        'default': 'I can help you monitor your health. Tell me your concerns or what you want to know.'
-      }
-    };
-
-    const messageLower = message.toLowerCase();
-    let category = 'default';
-
-    if (messageLower.includes('pregnancy') || messageLower.includes('ubuzima') || messageLower.includes('ubw\'abana')) {
-      category = 'pregnancy';
-    } else if (messageLower.includes('emergency') || messageLower.includes('ingenzi') || messageLower.includes('amaraso')) {
-      category = 'emergency';
-    } else if (messageLower.includes('nutrition') || messageLower.includes('ibiryo') || messageLower.includes('food')) {
-      category = 'nutrition';
+    if (!message) {
+      return res.status(400).json({ error: 'Message is required' });
     }
 
-    const response = {
+    const category = detectCategory(message);
+    let content = await fetchFromSources(category);
+
+    if (!content) {
+      content = fallbackResponses[language][category] || fallbackResponses[language].default;
+    }
+
+    res.json({
       id: Date.now(),
       type: 'bot',
-      content: responses[language][category],
+      content,
       timestamp: new Date().toISOString(),
       category
-    };
-
-    res.json(response);
+    });
   } catch (error) {
     console.error('Chat error:', error);
-    res.status(500).json({
-      error: 'Internal server error',
-      message: 'Something went wrong processing your request'
-    });
+    if (error.response) {
+      // Axios error
+      res.status(error.response.status).json({
+        error: 'Error fetching data from sources',
+        message: error.message
+      });
+    } else {
+      // General error
+      res.status(500).json({
+        error: 'Internal server error',
+        message: 'Something went wrong processing your request'
+      });
+    }
   }
 });
+
 
 // Health centers endpoint
 app.get('/api/health-centers', (req, res) => {

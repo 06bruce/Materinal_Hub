@@ -41,7 +41,7 @@ const Message = styled.div`
   gap: var(--spacing-3);
   align-items: flex-start;
   
-  ${props => props.isUser ? `
+  ${props => props.isUser  ? `
     flex-direction: row-reverse;
     
     .message-content {
@@ -108,9 +108,16 @@ const ChatPage = () => {
   const [message, setMessage] = useState('');
   const { messages, isTyping, sendMessage, isOffline, language } = useChat();
   const messagesEndRef = useRef(null);
+  const messagesContainerRef = useRef(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const container = messagesContainerRef.current;
+    if (container) {
+      const isAtBottom = container.scrollHeight - container.scrollTop === container.clientHeight;
+      if (isAtBottom) {
+        container.scrollIntoView({ behavior: "smooth" });
+      }
+    }
   };
 
   useEffect(() => {
@@ -143,9 +150,9 @@ const ChatPage = () => {
         </div>
       </ChatHeader>
 
-      <MessagesContainer>
+      <MessagesContainer ref={messagesContainerRef}>
         {messages.map((msg) => (
-          <Message key={msg.id} isUser={msg.type === 'user'}>
+          <Message key={msg.id} isUser ={msg.type === 'user'}>
             <MessageContent className="message-content">
               {msg.content}
             </MessageContent>
@@ -153,7 +160,7 @@ const ChatPage = () => {
         ))}
         
         {isTyping && (
-          <Message isUser={false}>
+          <Message isUser ={false}>
             <MessageContent className="message-content">
               {language === 'rw' ? 'Ndi gusoma...' : 'Typing...'}
             </MessageContent>
@@ -179,3 +186,4 @@ const ChatPage = () => {
 };
 
 export default ChatPage;
+  

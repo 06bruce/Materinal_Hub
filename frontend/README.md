@@ -18,7 +18,6 @@ A comprehensive maternal health support system designed specifically for Rwandan
 - **🏥 Health Centers Locator** - Find nearby medical facilities
 - **🧠 Mental Health Support** - Postpartum depression awareness
 - **🌍 Multilingual** - Kinyarwanda, English, French
-- **📱 Offline Mode** - Works without internet connection
 
 ## 🛠 Tech Stack
 

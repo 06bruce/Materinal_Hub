@@ -195,7 +195,7 @@ const HomePage = () => {
         },
         {
           icon: Users,
-          title: "Icyicaro cy'Abasore",
+          title: "Icyicaro cy'Abagabo",
           description: "Amakuru n'ubufasha ku basore bashaka gufasha abagore babo.",
           link: "/dads-corner",
           linkText: "Menya byinshi"
