@@ -18,11 +18,28 @@ const HomeContainer = styled.div`
 `;
 
 const HeroSection = styled.section`
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  position: relative;
+  min-height: 100vh;
   color: var(--white);
-  padding: var(--spacing-20) 0 var(--spacing-16);
   text-align: center;
-  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-20) 0 var(--spacing-16);
+  overflow: hidden;
+
+  /* Background Image */
+  background: url('https://media.istockphoto.com/id/2158853819/photo/happy-family-embracing-in-nature.jpg?s=612x612&w=0&k=20&c=EHRo4237ZBdKJwCzFm3r90OUriXNMTvtwZGZh1-2RIs=') center/cover no-repeat;
+
+  /* Dark overlay with 50% opacity */
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5); /* adjust opacity */
+    z-index: 1;
+  }
+
   @media (max-width: 768px) {
     padding: var(--spacing-12) 0 var(--spacing-8);
   }
@@ -32,7 +49,10 @@ const HeroContent = styled.div`
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 var(--spacing-4);
+  position: relative;
+  z-index: 2; /* ensures text is above overlay */
 `;
+
 
 const HeroTitle = styled(motion.h1)`
   font-size: var(--font-size-4xl);
