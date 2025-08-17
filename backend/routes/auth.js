@@ -1,0 +1,320 @@
+const express = require('express');
+const jwt = require('jsonwebtoken');
+const { body } = require('express-validator');
+const User = require('../models/User');
+const { protect } = require('../middleware/auth');
+const { handleValidationErrors } = require('../middleware/validate');
+
+const router = express.Router();
+
+// Generate JWT Token
+const generateToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: '30d', // Token expires in 30 days
+  });
+};
+
+// @route   POST /api/auth/register
+// @desc    Register a new user
+// @access  Public
+router.post('/register', [
+  body('name')
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .withMessage('Name must be between 2 and 100 characters'),
+  body('email')
+    .isEmail()
+    .normalizeEmail()
+    .withMessage('Please enter a valid email'),
+  body('password')
+    .isLength({ min: 6 })
+    .withMessage('Password must be at least 6 characters'),
+  body('phone')
+    .optional()
+    .matches(/^\+?[\d\s-()]+$/)
+    .withMessage('Please enter a valid phone number'),
+  body('age')
+    .optional()
+    .isInt({ min: 13, max: 100 })
+    .withMessage('Age must be between 13 and 100'),
+  body('isPregnant')
+    .optional()
+    .isBoolean()
+    .withMessage('isPregnant must be a boolean'),
+  body('pregnancyStartDate')
+    .optional()
+    .isISO8601()
+    .withMessage('Please enter a valid date'),
+  handleValidationErrors
+], async (req, res) => {
+  try {
+    const {
+      name,
+      email,
+      password,
+      phone,
+      age,
+      isPregnant,
+      pregnancyStartDate
+    } = req.body;
+
+    // Check if user already exists
+    const existingUser = await User.findByEmail(email);
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: 'User with this email already exists'
+      });
+    }
+
+    // Calculate due date and current week if pregnant
+    let dueDate = null;
+    let currentWeek = null;
+    
+    if (isPregnant && pregnancyStartDate) {
+      const startDate = new Date(pregnancyStartDate);
+      dueDate = new Date(startDate);
+      dueDate.setDate(dueDate.getDate() + 280); // 40 weeks = 280 days
+      
+      const today = new Date();
+      const weeksDiff = Math.floor((today - startDate) / (1000 * 60 * 60 * 24 * 7));
+      currentWeek = Math.max(0, Math.min(40, weeksDiff));
+    }
+
+    // Create user
+    const user = await User.create({
+      name,
+      email,
+      password,
+      phone,
+      age,
+      isPregnant,
+      pregnancyStartDate,
+      dueDate,
+      currentWeek
+    });
+
+    // Generate token
+    const token = generateToken(user._id);
+
+    // Update last login
+    user.lastLogin = new Date();
+    await user.save();
+
+    res.status(201).json({
+      success: true,
+      message: 'User registered successfully',
+      token,
+      user: user.getProfile()
+    });
+
+  } catch (error) {
+    console.error('Registration error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error during registration'
+    });
+  }
+});
+
+// @route   POST /api/auth/login
+// @desc    Login user
+// @access  Public
+router.post('/login', [
+  body('email')
+    .isEmail()
+    .normalizeEmail()
+    .withMessage('Please enter a valid email'),
+  body('password')
+    .notEmpty()
+    .withMessage('Password is required'),
+  handleValidationErrors
+], async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Find user by email and include password for comparison
+    const user = await User.findByEmail(email).select('+password');
+    
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid email or password'
+      });
+    }
+
+    // Check if user is active
+    if (!user.isActive) {
+      return res.status(401).json({
+        success: false,
+        message: 'Account is deactivated'
+      });
+    }
+
+    // Check password
+    const isPasswordValid = await user.comparePassword(password);
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid email or password'
+      });
+    }
+
+    // Generate token
+    const token = generateToken(user._id);
+
+    // Update last login
+    user.lastLogin = new Date();
+    await user.save();
+
+    res.json({
+      success: true,
+      message: 'Login successful',
+      token,
+      user: user.getProfile()
+    });
+
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error during login'
+    });
+  }
+});
+
+// @route   GET /api/auth/me
+// @desc    Get current user profile
+// @access  Private
+router.get('/me', protect, async (req, res) => {
+  try {
+    res.json({
+      success: true,
+      user: req.user
+    });
+  } catch (error) {
+    console.error('Get profile error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
+    });
+  }
+});
+
+// @route   PUT /api/auth/profile
+// @desc    Update user profile
+// @access  Private
+router.put('/profile', [
+  protect,
+  body('name')
+    .optional()
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .withMessage('Name must be between 2 and 100 characters'),
+  body('phone')
+    .optional()
+    .matches(/^\+?[\d\s-()]+$/)
+    .withMessage('Please enter a valid phone number'),
+  body('age')
+    .optional()
+    .isInt({ min: 13, max: 100 })
+    .withMessage('Age must be between 13 and 100'),
+  body('isPregnant')
+    .optional()
+    .isBoolean()
+    .withMessage('isPregnant must be a boolean'),
+  body('pregnancyStartDate')
+    .optional()
+    .isISO8601()
+    .withMessage('Please enter a valid date'),
+  body('preferences.language')
+    .optional()
+    .isIn(['rw', 'en', 'fr'])
+    .withMessage('Language must be rw, en, or fr'),
+  body('preferences.notifications')
+    .optional()
+    .isBoolean()
+    .withMessage('Notifications must be a boolean'),
+  handleValidationErrors
+], async (req, res) => {
+  try {
+    const {
+      name,
+      phone,
+      age,
+      isPregnant,
+      pregnancyStartDate,
+      preferences
+    } = req.body;
+
+    // Calculate due date and current week if pregnancy status changed
+    let dueDate = req.user.dueDate;
+    let currentWeek = req.user.currentWeek;
+    
+    if (isPregnant !== undefined && isPregnant !== req.user.isPregnant) {
+      if (isPregnant && pregnancyStartDate) {
+        const startDate = new Date(pregnancyStartDate);
+        dueDate = new Date(startDate);
+        dueDate.setDate(dueDate.getDate() + 280);
+        
+        const today = new Date();
+        const weeksDiff = Math.floor((today - startDate) / (1000 * 60 * 60 * 24 * 7));
+        currentWeek = Math.max(0, Math.min(40, weeksDiff));
+      } else {
+        dueDate = null;
+        currentWeek = null;
+      }
+    }
+
+    // Update user
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user._id,
+      {
+        name,
+        phone,
+        age,
+        isPregnant,
+        pregnancyStartDate,
+        dueDate,
+        currentWeek,
+        preferences: { ...req.user.preferences, ...preferences }
+      },
+      { new: true, runValidators: true }
+    ).select('-password');
+
+    res.json({
+      success: true,
+      message: 'Profile updated successfully',
+      user: updatedUser
+    });
+
+  } catch (error) {
+    console.error('Update profile error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error during profile update'
+    });
+  }
+});
+
+// @route   POST /api/auth/logout
+// @desc    Logout user (client-side token removal)
+// @access  Private
+router.post('/logout', protect, async (req, res) => {
+  try {
+    // In a more advanced setup, you might want to blacklist the token
+    // For now, we'll just return success and let the client remove the token
+    res.json({
+      success: true,
+      message: 'Logged out successfully'
+    });
+  } catch (error) {
+    console.error('Logout error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error during logout'
+    });
+  }
+});
+
+module.exports = router;
