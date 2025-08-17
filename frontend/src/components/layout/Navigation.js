@@ -22,7 +22,7 @@ const NavigationContainer = styled.nav`
   box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
   
   @media (min-width: 769px) {
-    display: none;
+    display: block;
   }
 `;
 
