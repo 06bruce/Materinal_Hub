@@ -49,7 +49,7 @@ const Logo = styled(Link)`
   }
 
   span {
-    font-size: 15px; // adjust this value as needed
+    font-size: 20px; // adjust this value as needed
   }
 `;
 
