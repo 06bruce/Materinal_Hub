@@ -281,7 +281,7 @@ const LoginPage = () => {
       name: 'Amazina',
       phone: 'Telefoni',
       age: 'Imyaka',
-      isPregnant: 'Ndubitwite',
+      isPregnant: 'Ndatwite',
       pregnancyStartDate: 'Itariki yo gutangira ubuzima',
       loginButton: 'Injira',
       registerButton: 'Iyandikishe',

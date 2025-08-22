@@ -246,7 +246,10 @@ const DadsCorner = () => {
   const { language } = useChat();
 
   const content = {
+    
     rw: {
+      Info: "Amakuru yingenzi ku bagabo",
+      heading: "Ibyingenzi Ku Bagabo Bashya",
       title: "Uruhare rw'Umugabo",
       subtitle: "Urakaza neza ahangaha ushobora kumenya uko wakita k'umugore wawe igihe atwite na nyuma yo kubyara! Hano uzasanga inama zuzuye zo kugufasha kuba wakita k'umuryango wawe kandi utegure uruhare rwawe rushya nka se w'umwana.",
       tips: [
@@ -432,6 +435,8 @@ const DadsCorner = () => {
       ]
     },
     en: {
+      Info: "Important information for Dads",
+      heading: "Essential Tips for New Dads",
       title: "Dad's Corner",
       subtitle: "Welcome to your dedicated space for fatherhood support! Pregnancy and early parenthood are incredible journeys that transform both partners. Here you'll find comprehensive guidance to help you be the best support system for your partner and prepare for your new role as a father.",
       tips: [
@@ -629,7 +634,7 @@ const DadsCorner = () => {
       </Header>
 
       <Section>
-        <SectionTitle>Essential Tips for Fathers</SectionTitle>
+        <SectionTitle>{currentContent.heading}</SectionTitle>
         <TipsGrid>
           {comprehensiveTips.map((tip, index) => {
             const Icon = tip.icon;
@@ -675,7 +680,7 @@ const DadsCorner = () => {
       </Section>
 
       <Section>
-        <SectionTitle>Important Information for Fathers</SectionTitle>
+        <SectionTitle>{currentContent.Info}</SectionTitle>
         
         <InfoCard>
           <h3>
