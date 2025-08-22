@@ -48,6 +48,14 @@ router.post('/register', [
   handleValidationErrors
 ], async (req, res) => {
   try {
+    // Check if MongoDB is available
+    if (!User || !User.findByEmail) {
+      return res.status(503).json({
+        success: false,
+        message: 'Database service unavailable. Please try again later.'
+      });
+    }
+
     const {
       name,
       email,
@@ -110,6 +118,15 @@ router.post('/register', [
 
   } catch (error) {
     console.error('Registration error:', error);
+    
+    // Check if it's a MongoDB connection error
+    if (error.name === 'MongooseServerSelectionError' || error.message.includes('ECONNREFUSED')) {
+      return res.status(503).json({
+        success: false,
+        message: 'Database service unavailable. Please try again later.'
+      });
+    }
+    
     res.status(500).json({
       success: false,
       message: 'Server error during registration'
@@ -131,6 +148,14 @@ router.post('/login', [
   handleValidationErrors
 ], async (req, res) => {
   try {
+    // Check if MongoDB is available
+    if (!User || !User.findByEmail) {
+      return res.status(503).json({
+        success: false,
+        message: 'Database service unavailable. Please try again later.'
+      });
+    }
+
     const { email, password } = req.body;
 
     // Find user by email and include password for comparison
@@ -176,6 +201,15 @@ router.post('/login', [
 
   } catch (error) {
     console.error('Login error:', error);
+    
+    // Check if it's a MongoDB connection error
+    if (error.name === 'MongooseServerSelectionError' || error.message.includes('ECONNREFUSED')) {
+      return res.status(503).json({
+        success: false,
+        message: 'Database service unavailable. Please try again later.'
+      });
+    }
+    
     res.status(500).json({
       success: false,
       message: 'Server error during login'

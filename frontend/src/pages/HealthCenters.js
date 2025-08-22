@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { MapPin, Phone, Clock, Star } from 'lucide-react';
+import { MapPin, Phone, Clock, Star, Loader } from 'lucide-react';
+import { apiRequest } from '../config/api';
 
 const Container = styled.div`
   max-width: 1000px;
@@ -72,29 +73,51 @@ const CenterCard = styled.div`
 `;
 
 const HealthCenters = () => {
-  const centers = [
-    {
-      name: "Kigali Central Hospital",
-      location: "Kigali, Rwanda",
-      phone: "+250 788 123 456",
-      hours: "24/7 Emergency Services",
-      rating: 4.5
-    },
-    {
-      name: "King Faisal Hospital",
-      location: "Kigali, Rwanda",
-      phone: "+250 788 234 567",
-      hours: "Mon-Fri: 8AM-6PM",
-      rating: 4.8
-    },
-    {
-      name: "Rwanda Military Hospital",
-      location: "Kigali, Rwanda",
-      phone: "+250 788 345 678",
-      hours: "24/7 Emergency Services",
-      rating: 4.3
-    }
-  ];
+  const [centers, setCenters] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchHealthCenters = async () => {
+      try {
+        setLoading(true);
+        const data = await apiRequest('/api/health-centers');
+        setCenters(data);
+      } catch (err) {
+        console.error('Failed to fetch health centers:', err);
+        setError('Failed to load health centers. Please try again later.');
+        
+        // Fallback to static data
+        setCenters([
+          {
+            name: "Kigali Central Hospital",
+            location: "Kigali, Rwanda",
+            phone: "+250 788 123 456",
+            hours: "24/7 Emergency Services",
+            rating: 4.5
+          },
+          {
+            name: "King Faisal Hospital",
+            location: "Kigali, Rwanda",
+            phone: "+250 788 234 567",
+            hours: "Mon-Fri: 8AM-6PM",
+            rating: 4.8
+          },
+          {
+            name: "Rwanda Military Hospital",
+            location: "Kigali, Rwanda",
+            phone: "+250 788 345 678",
+            hours: "24/7 Emergency Services",
+            rating: 4.3
+          }
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHealthCenters();
+  }, []);
 
   const renderStars = (rating) => {
     const stars = [];
@@ -110,6 +133,31 @@ const HealthCenters = () => {
     }
     return stars;
   };
+
+  if (loading) {
+    return (
+      <Container>
+        <Header>
+          <h1>Health Centers</h1>
+          <p>Loading health centers...</p>
+        </Header>
+        <div style={{ textAlign: 'center', padding: '2rem' }}>
+          <Loader size={48} className="animate-spin" />
+        </div>
+      </Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container>
+        <Header>
+          <h1>Health Centers</h1>
+          <p style={{ color: 'red' }}>{error}</p>
+        </Header>
+      </Container>
+    );
+  }
 
   return (
     <Container>

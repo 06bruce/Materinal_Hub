@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import { apiRequest, getApiUrl } from '../config/api';
 
 const ChatContext = createContext();
 
@@ -114,27 +115,38 @@ export const ChatProvider = ({ children }) => {
       dispatch({ type: 'SET_TYPING', payload: true });
       
       try {
-        // Simulate API call - replace with actual backend integration
-        const response = await simulateBotResponse(content, state.language);
+        console.log(`📤 Sending message to backend: "${content}"`);
         
+        // Call real backend API using apiRequest helper
+        const botResponse = await apiRequest('/api/chat', {
+          method: 'POST',
+          body: JSON.stringify({
+            message: content,
+            language: state.language
+          })
+        });
+        
+        console.log(`📥 Received response:`, botResponse);
+        
+        // Add a small delay for realistic feel
         setTimeout(() => {
-          dispatch({ type: 'ADD_MESSAGE', payload: response });
+          dispatch({ type: 'ADD_MESSAGE', payload: {
+            ...botResponse,
+            timestamp: new Date()
+          }});
           dispatch({ type: 'SET_TYPING', payload: false });
-        }, 1000 + Math.random() * 2000); // Random delay for realistic feel
+        }, 500 + Math.random() * 1000);
         
       } catch (error) {
-        const errorMessage = {
-          id: Date.now() + 1,
-          type: 'bot',
-          content: state.language === 'rw' 
-            ? 'Hari ikibazo. Ongera ugerageze.'
-            : 'There was an error. Please try again.',
-          timestamp: new Date(),
-          category: 'error'
-        };
+        console.error('❌ Chat API error:', error);
         
-        dispatch({ type: 'ADD_MESSAGE', payload: errorMessage });
+        // Fallback to local response if API fails
+        const fallbackResponse = await simulateBotResponse(content, state.language);
+        
+        setTimeout(() => {
+          dispatch({ type: 'ADD_MESSAGE', payload: fallbackResponse });
         dispatch({ type: 'SET_TYPING', payload: false });
+        }, 500);
       }
     }
   };

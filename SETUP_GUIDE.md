@@ -1,155 +1,162 @@
-# 🚀 Maternal Hub- Setup Guide
+# Maternal Health Hub - Setup Guide
 
-## 🎯 **Profile Page is Now Ready!**
+This guide will help you set up and run both the frontend and backend of the Maternal Health Hub application.
 
-I've just created a complete profile page for you. Here's what you need to do to get it working:
+## Prerequisites
 
-## 📋 **Quick Setup Steps:**
+- Node.js (v14 or higher)
+- npm or yarn
+- MongoDB (optional, for user authentication features)
 
-### **1. 🗄️ Set up MongoDB (if not already done)**
+## Backend Setup
 
-**Option A: Local MongoDB**
+### 1. Navigate to the backend directory
 ```bash
-# Install MongoDB locally (if not installed)
-# Start MongoDB service
-mongod
+cd Materinal_Hub/backend
 ```
 
-**Option B: MongoDB Atlas (Cloud)**
-1. Go to [MongoDB Atlas](https://www.mongodb.com/atlas)
-2. Create free account and cluster
-3. Get connection string
-
-### **2. ⚙️ Configure Backend Environment**
-
+### 2. Install dependencies
 ```bash
-cd backend
-
-# Create .env file
-echo "PORT=3001
-NODE_ENV=development
-MONGODB_URI=mongodb://localhost:27017/maternal-health
-JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
-FRONTEND_URL=http://localhost:3000" > .env
-```
-
-### **3. 🛠️ Install Backend Dependencies**
-
-```bash
-cd backend
 npm install
 ```
 
-### **4. 🚀 Start Backend Server**
+### 3. Create environment file
+Create a `.env` file in the backend directory with the following content:
+```env
+PORT=3001
+MONGODB_URI=mongodb://localhost:27017/maternal-health
+NODE_ENV=development
+FRONTEND_URL=http://localhost:3000
+```
 
+### 4. Start the backend server
 ```bash
-cd backend
 npm run dev
 ```
 
-You should see:
-```
-✅ MongoDB connected successfully
-🚀 Maternal Health API server running on port 3001
-```
+The backend will start on `http://localhost:3001`
 
-### **5. 🌐 Start Frontend (in new terminal)**
+## Frontend Setup
 
+### 1. Navigate to the frontend directory
 ```bash
-cd frontend
+cd Materinal_Hub/frontend
+```
+
+### 2. Install dependencies
+```bash
+npm install
+```
+
+### 3. Create environment file
+Create a `.env` file in the frontend directory with the following content:
+```env
+REACT_APP_API_URL=http://localhost:3001
+REACT_APP_ENV=development
+REACT_APP_DEBUG=true
+```
+
+### 4. Start the frontend development server
+```bash
 npm start
 ```
 
-## 🎉 **How to Test the Profile Page:**
+The frontend will start on `http://localhost:3000`
 
-### **Step 1: Register/Login**
-1. Go to `http://localhost:3000/login`
-2. Register a new user or login with existing user
-3. You'll be redirected to home page
+## API Integration
 
-### **Step 2: Access Profile**
-1. **Click on your name** in the top-right corner of the header
-2. **Or** use mobile menu → Profile
-3. **Or** go directly to `http://localhost:3000/profile`
+The application now includes real API integration with the following features:
 
-### **Step 3: Edit Profile**
-1. Click "Edit Profile" button
-2. Update your information
-3. Check "I am pregnant" if applicable
-4. Set pregnancy start date
-5. Click "Save Changes"
+### Backend APIs
+- **Chat API**: `/api/chat` - Handles chat messages with WHO data integration
+- **Health Centers**: `/api/health-centers` - Provides health center information
+- **Pregnancy Info**: `/api/pregnancy-info/:week` - Week-by-week pregnancy information
+- **Emergency Contacts**: `/api/emergency-contacts` - Emergency contact information
+- **Authentication**: `/api/auth/*` - User authentication endpoints
 
-## 🔧 **What's New in the Profile Page:**
+### WHO Data Integration
+The backend now fetches real data from WHO APIs:
+- Antenatal Care Coverage (ANC4_COVERAGE)
+- Skilled Birth Attendance
+- Adolescent Birth Rate
 
-### **✅ Features Added:**
-- **Personal Information Display** (name, email, phone, age)
-- **Edit Profile Functionality** with form validation
-- **Pregnancy Information** (if pregnant)
-  - Current week calculation
-  - Days until due date
-  - Weeks remaining
-- **Preferences Section** (language, notifications)
-- **Logout Button**
-- **Responsive Design** (works on mobile and desktop)
-- **Real-time Updates** with backend API
+### Frontend-Backend Connection
+- Frontend automatically connects to backend on port 3001
+- API calls are centralized in `/src/config/api.js`
+- Fallback responses when API is unavailable
+- Real-time chat with backend processing
 
-### **🎨 UI Features:**
-- Beautiful card-based layout
-- Smooth animations with Framer Motion
-- Icon-based information display
-- Gradient pregnancy progress section
-- Form validation and error handling
-- Toast notifications for success/error
+## Running Both Services
 
-## 🐛 **Troubleshooting:**
-
-### **If Profile Page Doesn't Load:**
-1. **Check if backend is running:**
+### Option 1: Separate Terminals
+1. Terminal 1 (Backend):
    ```bash
-   curl http://localhost:3001/health
+   cd Materinal_Hub/backend
+   npm run dev
    ```
 
-2. **Check if MongoDB is connected:**
-   - Look for "✅ MongoDB connected successfully" in backend console
+2. Terminal 2 (Frontend):
+   ```bash
+   cd Materinal_Hub/frontend
+   npm start
+   ```
 
-3. **Check if user is logged in:**
-   - Go to `http://localhost:3000/login` first
-   - Register or login
+### Option 2: Using a Process Manager
+You can use tools like `concurrently` or `pm2` to run both services together.
 
-### **If Profile Update Fails:**
-1. **Check browser console** for errors
-2. **Check backend console** for errors
-3. **Verify JWT token** in localStorage:
-   - F12 → Application → Local Storage → `authToken`
+## Testing the Connection
 
-### **Common Issues:**
-- **"MongoDB connection error"** → Start MongoDB
-- **"JWT_SECRET not defined"** → Check .env file
-- **"Port already in use"** → Change PORT in .env
-- **"CORS error"** → Check FRONTEND_URL in .env
+1. Open your browser to `http://localhost:3000`
+2. Navigate to the Chat page
+3. Send a message about pregnancy, emergency, or nutrition
+4. The system will fetch real WHO data and respond accordingly
 
-## 🔗 **API Endpoints Used:**
+## Troubleshooting
 
-- `POST /api/auth/register` - User registration
-- `POST /api/auth/login` - User login
-- `GET /api/auth/me` - Get current user
-- `PUT /api/auth/profile` - Update user profile
-- `POST /api/auth/logout` - User logout
+### Backend Issues
+- Ensure MongoDB is running (if using authentication)
+- Check that port 3001 is available
+- Verify all dependencies are installed
 
-## 🎯 **Next Steps:**
+### Frontend Issues
+- Ensure the backend is running on port 3001
+- Check the `.env` file configuration
+- Clear browser cache if needed
 
-Once the profile page is working, you can:
-1. **Test all features** (edit profile, pregnancy tracking)
-2. **Customize the design** (colors, layout)
-3. **Add more fields** (emergency contacts, medical history)
-4. **Implement other features** (chat history, file uploads)
+### CORS Issues
+The backend is configured to accept requests from `http://localhost:3000`. If you change the frontend port, update the `FRONTEND_URL` in the backend `.env` file.
 
-## 📞 **Need Help?**
+## API Endpoints
 
-If you encounter any issues:
-1. Check the console logs (both frontend and backend)
-2. Verify all environment variables are set
-3. Make sure MongoDB is running
-4. Check that both servers are running on correct ports
+### Chat
+- **POST** `/api/chat`
+  - Body: `{ "message": "string", "language": "rw|en" }`
+  - Returns: Chat response with WHO data integration
 
-The profile page should now work perfectly! 🎉
+### Health Centers
+- **GET** `/api/health-centers`
+  - Returns: List of health centers with contact information
+
+### Pregnancy Information
+- **GET** `/api/pregnancy-info/:week`
+  - Returns: Week-specific pregnancy information
+
+### Emergency Contacts
+- **GET** `/api/emergency-contacts`
+  - Returns: Emergency contact information
+
+## Development Notes
+
+- The backend includes real WHO API integration for pregnancy-related queries
+- Frontend has fallback responses when API is unavailable
+- All API calls are centralized and configurable
+- CORS is properly configured for local development
+- Error handling includes graceful fallbacks
+
+## Next Steps
+
+1. Test all API endpoints
+2. Customize WHO data processing as needed
+3. Add more health data sources
+4. Implement user authentication
+5. Deploy to production environment
