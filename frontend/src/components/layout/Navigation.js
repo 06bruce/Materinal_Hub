@@ -18,6 +18,7 @@ const NavigationContainer = styled.nav`
   z-index: 1000;
   background: var(--white);
   border-top: 1px solid var(--gray-200);
+  border-radius: 0px 20px 0px 20px;
   padding: var(--spacing-2) 0;
   box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
   
