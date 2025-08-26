@@ -49,12 +49,7 @@ A Node.js/Express.js backend API for the Maternal Health Chatbot with real authe
 
 ## 🗄️ Database Setup
 
-### Option 1: Local MongoDB
-1. Install MongoDB locally
-2. Start MongoDB service
-3. Use connection string: `mongodb://localhost:27017/maternal-health`
-
-### Option 2: MongoDB Atlas (Cloud)
+### Recommendation : MongoDB Atlas (Cloud)
 1. Create account at [MongoDB Atlas](https://www.mongodb.com/atlas)
 2. Create a cluster
 3. Get connection string and update `MONGODB_URI` in `.env`
