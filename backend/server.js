@@ -160,7 +160,7 @@ function normalizeCountry(input = 'RWA') {
 const INTENT_MAP = {
   anc4: {
     keywords: ['antenatal care', 'at least four', 'anc4', 'pregnancy checkups'],
-    display: { rw: 'Gusuzumwa kwa mbere yo kubyara (inzuro 4+ %)', en: 'Antenatal care (4+ visits %)' }
+    display: { rw: 'Gusuzumwa kuwa mbere yo kubyara (inshuro 4+ %)', en: 'Antenatal care (4+ visits %)' }
   },
   sba: {
     keywords: ['skilled birth', 'attended by skilled', 'delivery with a skilled attendant', 'sba'],
@@ -431,11 +431,9 @@ if (process.env.MONGODB_URI) {
 .then(() => console.log('✅ MongoDB connected successfully'))
   .catch(err => {
     console.warn('⚠️ MongoDB connection failed, continuing without database:', err.message);
-    console.log('💡 To enable database features, start MongoDB or set MONGODB_URI environment variable');
+    console.log('💡 To enable database features, chaeck you internet connection and reconnect to the internet');
   });
-} else {
-  console.log('ℹ️ MongoDB not configured, running without database features');
-}
+} 
 
 // Middleware
 app.use(helmet());
@@ -566,7 +564,7 @@ function calculateConfidence(message, category) {
 function getPersonalizedAdvice(category, language) {
   const advice = {
     rw: {
-      pregnancy: 'Reba ko ujya kwa muganga buri munsi kandi ufata vitamini zawe.',
+      pregnancy: 'Reba ko ujya kwa muganga buri munsi kandi ufata intungamubiri zawe.',
       emergency: 'Niba ufite ibibazo by\'ingenzi, ijya kwa muganga vuba.',
       nutrition: 'Fata ibiryo byuzuye kandi unywa amazi menshi.',
       mental_health: 'Vuga ibibazo byawe kwa muganga cyangwa umufasha.',
@@ -590,9 +588,9 @@ function getPersonalizedAdvice(category, language) {
 function getSuggestions(category, language) {
   const suggestions = {
     rw: {
-      pregnancy: ['Niba ufite ibibazo?', 'Ushaka kumenya iki?', 'Ushaka kumenya ibyerekeye vitamini?'],
+      pregnancy: ['Niba ufite ibibazo?', 'Ushaka kumenya iki?', 'Ushaka kumenya ibyerekeye urubyaro ?'],
       emergency: ['Ufite amaraso?', 'Ufite ububabare?', 'Ushaka kumenya ibyerekeye ingenzi?'],
-      nutrition: ['Ushaka kumenya ibiryo byiza?', 'Ushaka kumenya vitamini?', 'Ushaka kumenya amazi?'],
+      nutrition: ['Ushaka kumenya indyo yuzuye?', 'Ushaka kumenya vitamini wafata?', 'Ushaka kumenya ibindi byagufasha mukubona vitamini?'],
       mental_health: ['Ufite ubwoba?', 'Ufite agahinda?', 'Ushaka kumenya ibyerekeye ubuzima bw\'ubwenge?'],
       exercise: ['Ushaka kumenya sport?', 'Ushaka kumenya ibyerekeye gukora sport?', 'Ushaka kumenya ibyerekeye kugenda?'],
       default: ['Ushaka kumenya iki?', 'Ufite ibibazo?', 'Ushaka kumenya ibyerekeye ubuzima?']
@@ -624,14 +622,14 @@ function translateToKinyarwanda(englishText) {
     
     // Trends
     'and is improving': 'kandi biragenda neza',
-    'and is stable': 'kandi birahagaze',
-    'and is declining': 'kandi biragenda mbi',
+    'and is stable': 'kandi biri mumurongo mwiza',
+    'and is declining': 'kandi biragenda nabi',
     'and is needs attention': 'kandi bikenewe kwitabwaho',
     
     // Categories
     'improving': 'biragenda neza',
     'stable': 'birahagaze',
-    'declining': 'biragenda mbi',
+    'declining': 'biragenda nabi',
     'needs attention': 'bikenewe kwitabwaho',
     
     // Health outcomes
@@ -703,29 +701,6 @@ app.get('/api/health-centers', (req, res) => {
   ];
 
   res.json(centers);
-});
-
-// Pregnancy information endpoint
-app.get('/api/pregnancy-info/:week', (req, res) => {
-  const week = parseInt(req.params.week);
-  
-  const weekInfo = {
-    rw: {
-      baby: `Umwana wawe afite uburebure bwa cm ${2 + week * 0.5} kandi afite ibiro bya gram ${week * 7}.`,
-      mother: "Ushobora kumva ububabare mu nda kandi ushobora kumva umwana akina.",
-      tips: "Fata vitamini zawe buri munsi, unywa amazi menshi, kandi ujya kwa muganga."
-    },
-    en: {
-      baby: `Your baby is about ${2 + week * 0.5} cm long and weighs about ${week * 7} grams.`,
-      mother: "You may feel abdominal pain and you may feel the baby moving.",
-      tips: "Take your vitamins daily, drink plenty of water, and see your doctor."
-    }
-  };
-
-  res.json({
-    week,
-    info: weekInfo.rw // Default to Kinyarwanda
-  });
 });
 
 // Emergency contacts endpoint

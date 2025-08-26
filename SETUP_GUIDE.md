@@ -12,7 +12,7 @@ This guide will help you set up and run both the frontend and backend of the Mat
 
 ### 1. Navigate to the backend directory
 ```bash
-cd Materinal_Hub/backend
+cd Materinal_Hub/new/backend
 ```
 
 ### 2. Install dependencies
@@ -24,7 +24,7 @@ npm install
 Create a `.env` file in the backend directory with the following content:
 ```env
 PORT=3001
-MONGODB_URI=mongodb://localhost:27017/maternal-health
+MONGODB_URI=
 NODE_ENV=development
 FRONTEND_URL=http://localhost:3000
 ```
@@ -69,8 +69,8 @@ The application now includes real API integration with the following features:
 
 ### Backend APIs
 - **Chat API**: `/api/chat` - Handles chat messages with WHO data integration
-- **Health Centers**: `/api/health-centers` - Provides health center information
-- **Pregnancy Info**: `/api/pregnancy-info/:week` - Week-by-week pregnancy information
+- **Health Centers**: `/api/health-centers` - Provides health center information and geolocation of the nearby hospitals or health centers
+- **Pregnancy Info**: `/api/pregnancy-info/:week` - Week-by-week pregnancy information and pastpartum fuid
 - **Emergency Contacts**: `/api/emergency-contacts` - Emergency contact information
 - **Authentication**: `/api/auth/*` - User authentication endpoints
 

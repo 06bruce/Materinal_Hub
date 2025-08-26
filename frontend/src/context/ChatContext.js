@@ -155,7 +155,7 @@ export const ChatProvider = ({ children }) => {
     // This is a mock response system - replace with actual AI/backend integration
     const responses = {
       rw: {
-        'pregnancy': 'Ubusanzwe ubuzima bwawe bwiza. Reba ko ufata vitamini zawe buri munsi kandi ujya kwa muganga.',
+        'pregnancy': 'Ubusanzwe ubuzima bwawe ni bwiza. Reba ko ufata vitamini zawe buri munsi kandi ujya kwa muganga.',
         'emergency': 'Ibi ni ibibazo by\'ingenzi! Ijya kwa muganga vuba cyane cyane niba ufite amaraso cyangwa ububabare.',
         'nutrition': 'Fata ibiryo byuzuye amatungo, imboga, n\'imbuto. Reba ko unywa amazi menshi.',
         'default': 'Nshobora kugufasha kugenzura ubuzima bwawe. Vuga ibibazo byawe cyangwa ibyo ushaka kumenya.'
