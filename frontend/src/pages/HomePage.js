@@ -213,7 +213,7 @@ const HomePage = () => {
           link: "/pregnancy-tracker",
           linkText: "Reba tracker"
         },
-        {
+        { 
           icon: Users,
           title: "Icyicaro cy'Abagabo",
           description: "Amakuru n'ubufasha ku basore bashaka gufasha abagore babo.",

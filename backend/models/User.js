@@ -56,7 +56,7 @@ const userSchema = new mongoose.Schema({
     language: {
       type: String,
       enum: ['rw', 'en', 'fr'],
-      default: 'rw'
+      default: 'en'
     },
     notifications: {
       type: Boolean,
