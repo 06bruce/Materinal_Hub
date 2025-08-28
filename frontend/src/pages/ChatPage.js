@@ -28,12 +28,12 @@ const MessagesContainer = styled.div`
   background: var(--white);
   border-radius: var(--radius-xl);
   padding: var(--spacing-4);
-  margin-bottom: var(--spacing-4);
   box-shadow: var(--shadow-sm);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: var(--spacing-4);
+  scroll-behavior: smooth;
 `;
 
 const Message = styled.div`
@@ -248,24 +248,33 @@ const ChatPage = () => {
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
 
-  const scrollToBottom = () => {
+  const scrollToBottom = (force = false) => {
     const container = messagesContainerRef.current;
-    if (container) {
-      const isAtBottom = container.scrollHeight - container.scrollTop === container.clientHeight;
-      if (isAtBottom) {
-        container.scrollIntoView({ behavior: "smooth" });
-      }
+    if (!container) return;
+    const distanceFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight;
+    const isNearBottom = distanceFromBottom < 120;
+    if (force || isNearBottom) {
+      container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
     }
   };
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, isTyping]);
+
+  useEffect(() => {
+    // Ensure we start at the latest message on mount
+    scrollToBottom(true);
+  }, []);
 
   const handleSendMessage = () => {
     if (message.trim()) {
       sendMessage(message.trim());
       setMessage('');
+      // Force scroll after React updates the DOM
+      setTimeout(() => {
+        scrollToBottom(true);
+      }, 0);
     }
   };
 
