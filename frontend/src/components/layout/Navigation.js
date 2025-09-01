@@ -9,6 +9,7 @@ import {
   MapPin, 
   Brain
 } from 'lucide-react';
+import { useChat } from '../../context/ChatContext'; // ✅ same context as Header
 
 const NavigationContainer = styled.nav`
   position: fixed;
@@ -16,12 +17,14 @@ const NavigationContainer = styled.nav`
   left: 0;
   right: 0;
   z-index: 1000;
-  background: var(--white);
+  background: rgba(255, 255, 255, 0.8);
   border-top: 1px solid var(--gray-200);
-  border-radius: 0px 20px 0px 20px;
-  padding: var(--spacing-2) 0;
-  box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
-  
+  border-radius: 30px 30px 0 0;
+  padding: var(--spacing-3) var(--spacing-5);
+  box-shadow: 0 -6px 12px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(70px);
+  transition: all 0.3s ease-in-out;
+
   @media (min-width: 769px) {
     display: block;
   }
@@ -63,45 +66,43 @@ const NavigationLink = styled(Link)`
     width: 20px;
     height: 20px;
   }
-  @media(max-width:720px){
-   
-  }  
 `;
 
 const Navigation = () => {
   const location = useLocation();
+  const { language } = useChat(); // ✅ now reading from context, not local state
 
   const navItems = [
     {
       path: '/',
       icon: Home,
-      label: 'Home',
+      label: { en: 'Home', rw: 'Ahabanza',  },
       exact: true
     },
     {
       path: '/chat',
       icon: MessageCircle,
-      label: 'Chat'
+      label: { en: 'Chat', rw: 'Ikiganiro' }
     },
     {
       path: '/pregnancy-tracker',
       icon: Calendar,
-      label: 'Tracker'
+      label: { en: 'Tracker', rw: 'Umugenzuzi' }
     },
     {
       path: '/dads-corner',
       icon: Users,
-      label: 'Dads'
+      label: { en: 'Dads', rw: 'Ababyeyi b’igitsina gabo' }
     },
     {
       path: '/health-centers',
       icon: MapPin,
-      label: 'Centers'
+      label: { en: 'Centers', rw: 'Ibigo nderabuzima' }
     },
     {
       path: '/mental-health',
       icon: Brain,
-      label: 'Mental'
+      label: { en: 'Mental', rw: 'Ubuzima bwo mu mutwe' }
     }
   ];
 
@@ -113,17 +114,17 @@ const Navigation = () => {
   };
 
   return (
-    <NavigationContainer className='text-'>
+    <NavigationContainer>
       <NavigationList>
         {navItems.map((item) => {
           const Icon = item.icon;
           const active = isActive(item.path, item.exact);
-          
+
           return (
             <NavigationItem key={item.path}>
               <NavigationLink to={item.path} active={active}>
                 <Icon />
-                <span>{item.label}</span>
+                <span>{item.label[language] || item.label.en}</span>
               </NavigationLink>
             </NavigationItem>
           );

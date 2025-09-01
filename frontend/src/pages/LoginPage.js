@@ -248,7 +248,7 @@ const ClearDataButton = styled.button`
   
   &:hover {
     background: var(--danger);
-    color: var(--white);
+    color:  #820f0fff;
   }
 `;
 
