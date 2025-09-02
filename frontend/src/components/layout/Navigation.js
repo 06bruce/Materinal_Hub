@@ -27,7 +27,8 @@ const NavigationContainer = styled.nav`
 
   @media (min-width: 769px) {
     display: block;
-  }
+    border-radius: 10px 10px ;
+    }
 `;
 
 const NavigationList = styled.ul`

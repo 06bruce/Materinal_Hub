@@ -91,21 +91,21 @@ const HealthCenters = () => {
         setCenters([
           {
             name: "Kigali Central Hospital",
-            location: "Kigali, Rwanda",
+            location: "Kigali",
             phone: "+250 788 123 456",
             hours: "24/7 Emergency Services",
             rating: 4.5
           },
           {
             name: "King Faisal Hospital",
-            location: "Kigali, Rwanda",
+            location: "Kigali, Kacyiru",
             phone: "+250 788 234 567",
             hours: "Mon-Fri: 8AM-6PM",
             rating: 4.8
           },
           {
             name: "Rwanda Military Hospital",
-            location: "Kigali, Rwanda",
+            location: "Kigali, Kanombe",
             phone: "+250 788 345 678",
             hours: "24/7 Emergency Services",
             rating: 4.3

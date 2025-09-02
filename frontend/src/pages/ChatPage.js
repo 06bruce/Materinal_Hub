@@ -314,13 +314,12 @@ const ChatPage = () => {
               
               {/* Display source badge */}
               {msg.type === 'bot' && msg.source && (
-                <SourceBadge source={msg.source}>
-                  {msg.source === 'who_api' ? <Database size={12} /> : <Info size={12} />}
-                  {msg.source === 'who_api' ? 
-                    (language === 'rw' ? 'Amakuru ya WHO' : 'WHO Data') : 
-                    (language === 'rw' ? 'Amakuru y\'ubuzima' : 'Health Info')
-                  }
-                </SourceBadge>
+                 <SourceBadge source={msg.source}>
+                    {msg.source === 'who_api' ? <Database size={12} /> : <Info size={12} />}
+                    {msg.source === 'who_api'
+                     ? (language === 'rw' ? 'Amakuru ya WHO' : 'WHO Data')
+                     : (language === 'rw' ? 'Amakuru y\'ubuzima' : 'Health Info')}
+                 </SourceBadge>   
               )}
               
               {/* Display suggestions */}

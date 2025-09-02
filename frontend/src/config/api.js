@@ -32,31 +32,24 @@ export const getApiUrl = (endpoint) => {
   return `${API_CONFIG.BASE_URL}${endpoint}`;
 };
 
-// Helper function to make API requests
-export const apiRequest = async (endpoint, options = {}) => {
-  const url = getApiUrl(endpoint);
-  const config = {
-    method: 'GET',
-    headers: {
-      ...API_CONFIG.DEFAULT_HEADERS,
-      ...options.headers
-    },
-    timeout: API_CONFIG.TIMEOUT,
-    ...options
-  };
 
-  try {
-    const response = await fetch(url, config);
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    return await response.json();
-  } catch (error) {
-    console.error('API request failed:', error);
-    throw error;
+// Example api.js
+export const apiRequest = async (url, options = {}) => {
+  const apiUrl = getApiUrl(url);
+  const fetchOptions = {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(options.headers || {}),
+    },
+    // body should already be stringified in ChatContext.js
+  };
+  const response = await fetch(apiUrl, fetchOptions);
+  if (!response.ok) {
+    throw new Error(`API request failed: ${response.status}`);
   }
+  return response.json();
 };
+
 
 export default API_CONFIG;
