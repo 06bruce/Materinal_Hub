@@ -142,7 +142,7 @@ const Navigation = () => {
               <NavigationLink to={item.path} active={active}>
                 <Icon />
                 <span>{item.label[language] || item.label.en}</span>
-              </NavigationLink>
+                </NavigationLink>
             </NavigationItem>
           );
         })}
