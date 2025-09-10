@@ -221,7 +221,7 @@ const PregnancyTracker = () => {
         
         <SetupForm>
           <h3>Enter Your Pregnancy Information</h3>
-          <div className="form-group">
+          <div className="form-group" aria-required >
             <label>First Day of Last Period</label>
             <input
               type="date"
@@ -229,7 +229,7 @@ const PregnancyTracker = () => {
               onChange={(e) => setStartDate(e.target.value)}
             />
           </div>
-          <div className="form-group">
+          <div className="form-group" aria-required>
             <label>Due Date</label>
             <input
               type="date"

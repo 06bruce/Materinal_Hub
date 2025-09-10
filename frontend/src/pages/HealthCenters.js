@@ -92,21 +92,21 @@ const HealthCenters = () => {
           {
             name: "Kigali Central Hospital",
             location: "Kigali",
-            phone: "+250 788 123 456",
+            phone: "+250 782 749 660",
             hours: "24/7 Emergency Services",
             rating: 4.5
           },
           {
             name: "King Faisal Hospital",
             location: "Kigali, Kacyiru",
-            phone: "+250 788 234 567",
+            phone: "3939",
             hours: "Mon-Fri: 8AM-6PM",
             rating: 4.8
           },
           {
             name: "Rwanda Military Hospital",
             location: "Kigali, Kanombe",
-            phone: "+250 788 345 678",
+            phone: "4060",
             hours: "24/7 Emergency Services",
             rating: 4.3
           }

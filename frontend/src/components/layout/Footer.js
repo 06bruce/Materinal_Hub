@@ -124,8 +124,8 @@ const Footer = () => {
         <EmergencyBanner>
           <h4>🚨 Emergency Contact</h4>
           <p>If you're experiencing a medical emergency, call immediately:</p>
-          <a href="tel:+250788123456" className="emergency-number">
-            +250 788 123 456
+          <a href="112" className="emergency-number">
+            114
           </a>
         </EmergencyBanner>
 
@@ -154,7 +154,7 @@ const Footer = () => {
             <h3>Contact Information</h3>
             <ContactItem>
               <Phone />
-              <span>+250 788 123 456</span>
+              <span>116</span>
             </ContactItem>
             <ContactItem>
               <Mail />
@@ -169,7 +169,7 @@ const Footer = () => {
           <FooterSection>
             <h3>Resources</h3>
             <ul>
-              <li><a href="/about">About Us</a></li>
+              <li><a href="/">About Us</a></li>
               <li><a href="/privacy">Privacy Policy</a></li>
               <li><a href="/terms">Terms of Service</a></li>
               <li><a href="/faq">FAQ</a></li>

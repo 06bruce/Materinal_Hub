@@ -249,7 +249,7 @@ const DadsCorner = () => {
     
     rw: {
       Info: "Amakuru yingenzi ku bagabo",
-      heading: "Ibyingenzi Ku Bagabo Bashya",
+      heading: "Ibyingenzi Ku bitegura kuba ababyeyi b'abagabo",
       title: "Uruhare rw'Umugabo",
       subtitle: "Urakaza neza ahangaha ushobora kumenya uko wakita k'umugore wawe igihe atwite na nyuma yo kubyara! Hano uzasanga inama zuzuye zo kugufasha kuba wakita k'umuryango wawe kandi utegure uruhare rwawe rushya nka se w'umwana.",
       tips: [
@@ -401,7 +401,7 @@ const DadsCorner = () => {
           ]
         }
       ],
-      warningTitle: "Ibimenyetso byo Kwitonda",
+      warningTitle: "Ibimenyetso byo Kwitondera",
       warningContent: "Nubwo ubw'ubwishingizi buri butekanye, ni ngombwa kumenya iyo segerwa ubuvuzi. Iyo nyina wawe ahabwa ibi bimenyetso, vuganira na muganga we vuba:",
       emergencySigns: "Ibimenyetso by'Umutekano:",
       emergencyList: [

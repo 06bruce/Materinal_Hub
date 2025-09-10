@@ -18,6 +18,10 @@ import MentalHealth from './pages/MentalHealth';
 import AboutPage from './pages/AboutPage';
 import LoginPage from './pages/LoginPage';
 import ProfilePage from './pages/ProfilePage';
+import PrivacyPage from './pages/PrivacyPage';
+import TermsPage from './pages/TermsPage';
+import SupportPage from './pages/SupportPage';
+import FAQPage from './pages/FAQPage';
 
 // Context
 import { ChatProvider } from './context/ChatContext';
@@ -41,10 +45,10 @@ function App() {
       <ChatProvider>
         <AppContainer>
           <Helmet>
-            <title>Maternal Health Chatbot - Kinyarwanda Guide</title>
+            <title>Maternal Hub Chatbot - Kinyarwanda Guide</title>
             <meta name="description" content="Your trusted pregnancy and postpartum guide — anytime, anywhere, in your language." />
             <meta name="keywords" content="maternal health, pregnancy, postpartum, Rwanda, Kinyarwanda, chatbot, health guide" />
-            <meta property="og:title" content="Maternal Health Chatbot" />
+            <meta property="og:title" content="Maternal Hub" />
             <meta property="og:description" content="Your trusted pregnancy and postpartum guide — anytime, anywhere, in your language." />
             <meta property="og:type" content="website" />
           </Helmet>
@@ -63,6 +67,10 @@ function App() {
               <Route path="/about" element={<AboutPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/term & conditions" element={<TermsPage />} />
+              <Route path="/faq" element={<FAQPage/>} />
+              <Route path="privacy" element={<PrivacyPage/>} />
+              <Route path="support" element={<SupportPage/>} />
             </Routes>
           </MainContent>
           

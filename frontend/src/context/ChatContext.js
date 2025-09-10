@@ -1,12 +1,12 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
-import { apiRequest, getApiUrl } from '../config/api';
+import { apiRequest } from '../config/api';
 
 const ChatContext = createContext();
 
 const initialState = {
   messages: [],
   isTyping: false,
-  language: 'rw', // Default to Kinyarwanda
+  language: 'en', // Default to Kinyarwanda
   userProfile: null,
   pregnancyWeek: null,
   isOffline: false,

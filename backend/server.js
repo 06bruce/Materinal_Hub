@@ -6,6 +6,8 @@ const morgan = require("morgan");
 const mongoose = require("mongoose");
 const axios = require("axios");
 const NodeCache = require("node-cache");
+const REPLICATE_API_TOKEN = process.env.REPLICATE_API_TOKEN;
+
 require("dotenv").config();
 
 
@@ -161,7 +163,6 @@ const fallbackResponses = {
   },
 };
 
-// ---------------------------
 // WHO GHO API helpers
 // ---------------------------
 const WHO_BASE = "https://ghoapi.azureedge.net/api";
@@ -645,8 +646,6 @@ app.get("/api/who/maternal", async (req, res) => {
 });
 
 // Enhanced Chat endpoint with WHO API integration
-const REPLICATE_API_TOKEN = process.env.REPLICATE_API_TOKEN;
-
 app.post("/api/chat", async (req, res) => {
   try {
     const { message, language = "en" } = req.body;
@@ -659,7 +658,7 @@ app.post("/api/chat", async (req, res) => {
     const replicateResponse = await axios.post(
       "https://api.replicate.com/v1/predictions",
       {
-        version: "f1d50bb24186c52daae319ca8366e53debdaa9e0ae7ff976e918df752732ccc4", // e.g. "a670b92b...etc"
+        version: "f1d50bb24186c52daae319ca8366e53debdaa9e0ae7ff976e918df752732ccc4", 
         input: {
           prompt: message,
           top_p: 1,
@@ -718,8 +717,7 @@ function calculateConfidence(message, category) {
 function getPersonalizedAdvice(category, language) {
   const advice = {
     rw: {
-      pregnancy:
-        "Reba ko ujya kwa muganga buri munsi kandi ufata intungamubiri zawe.",
+      pregnancy: "Reba ko ujya kwa muganga buri munsi kandi ufata intungamubiri zawe.",
       emergency: "Niba ufite ibibazo by'ingenzi, ijya kwa muganga vuba.",
       nutrition: "Fata ibiryo byuzuye kandi unywa amazi menshi.",
       mental_health: "Vuga ibibazo byawe kwa muganga cyangwa umufasha.",
@@ -728,8 +726,7 @@ function getPersonalizedAdvice(category, language) {
     },
     en: {
       pregnancy: "Make sure to attend regular checkups and take your vitamins.",
-      emergency:
-        "If you have emergency symptoms, seek medical help immediately.",
+      emergency: "If you have emergency symptoms, seek medical help immediately.",
       nutrition: "Eat a balanced diet and drink plenty of water.",
       mental_health: "Talk to your doctor or counselor about your concerns.",
       exercise: "Gentle exercise will help you stay healthy.",
@@ -811,6 +808,7 @@ function getSuggestions(category, language) {
   return suggestions[language][category] || suggestions[language].default;
 }
 
+
 // Enhanced translation function for API responses to Kinyarwanda
 function translateToKinyarwanda(englishText) {
   const translations = {
@@ -889,7 +887,7 @@ app.get("/api/health-centers", (req, res) => {
       id: 1,
       name: "Kigali Central Hospital",
       location: "Kigali, Rwanda",
-      phone: "+250 788 123 456",
+      phone: "+250 782 749 660",
       hours: "24/7 Emergency Services",
       rating: 4.5,
     },
@@ -897,7 +895,7 @@ app.get("/api/health-centers", (req, res) => {
       id: 2,
       name: "King Faisal Hospital",
       location: "Kigali, Rwanda",
-      phone: "+250 788 234 567",
+      phone: "3939",
       hours: "Mon-Fri: 8AM-6PM",
       rating: 4.8,
     },
@@ -905,7 +903,7 @@ app.get("/api/health-centers", (req, res) => {
       id: 3,
       name: "Rwanda Military Hospital",
       location: "Kigali, Rwanda",
-      phone: "+250 788 345 678",
+      phone: "4060",
       hours: "24/7 Emergency Services",
       rating: 4.3,
     },
@@ -918,17 +916,17 @@ app.get("/api/emergency-contacts", (req, res) => {
   const contacts = [
     {
       name: "Emergency Hotline",
-      phone: "+250 788 123 456",
+      phone: "112",
       description: "24/7 emergency medical assistance",
     },
     {
       name: "Maternal Health Support",
-      phone: "+250 788 234 567",
+      phone: "116",
       description: "Specialized maternal health support",
     },
     {
       name: "Mental Health Crisis",
-      phone: "+250 788 345 678",
+      phone: "114",
       description: "Mental health crisis intervention",
     },
   ];

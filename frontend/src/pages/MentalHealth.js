@@ -80,7 +80,7 @@ const MentalHealth = () => {
       icon: Phone,
       title: "Crisis Hotline",
       content: "If you're experiencing a mental health crisis, call the emergency hotline immediately.",
-      contact: "+250 788 123 456"
+      contact: "114"
     },
     {
       icon: BookOpen,
@@ -92,7 +92,7 @@ const MentalHealth = () => {
       icon: Heart,
       title: "Self-Care Tips",
       content: "Practice self-care through exercise, meditation, proper sleep, and healthy eating habits.",
-      contact: "Daily reminders available"
+      contact: "Daily reminders available",
     }
   ];
 

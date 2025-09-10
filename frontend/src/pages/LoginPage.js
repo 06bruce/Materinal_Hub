@@ -274,7 +274,7 @@ const LoginPage = () => {
     rw: {
       login: 'Kwinjira',
       register: 'Kwiyandikisha',
-      welcome: 'Murakaza neza kuri Maternal Health',
+      welcome: 'Murakaza neza kuri Maternal Hub',
       subtitle: 'Injira kugira ngo ubone serivisi zuzuye',
       email: 'Imeyili',
       password: 'Ijambo ry\'ibanga',
@@ -297,7 +297,7 @@ const LoginPage = () => {
     en: {
       login: 'Login',
       register: 'Register',
-      welcome: 'Welcome to Maternal Health',
+      welcome: 'Welcome to Maternal Hub',
       subtitle: 'Sign in to access full services',
       email: 'Email',
       password: 'Password',

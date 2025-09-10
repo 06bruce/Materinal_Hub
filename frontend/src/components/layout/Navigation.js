@@ -19,16 +19,26 @@ const NavigationContainer = styled.nav`
   z-index: 1000;
   background: rgba(255, 255, 255, 0.8);
   border-top: 1px solid var(--gray-200);
+<<<<<<< HEAD
   border-radius: 30px 30px 0 0;
   padding: var(--spacing-3) var(--spacing-5);
   box-shadow: 0 -6px 12px rgba(0, 0, 0, 0.15);
   backdrop-filter: blur(70px);
   transition: all 0.3s ease-in-out;
+=======
+  border-radius:  20px 20px;
+  padding: 10px;
+  box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+
+>>>>>>> 46aac94 (Enhanced)
 
   @media (min-width: 769px) {
     display: block;
     border-radius: 10px 10px ;
     }
+
+    
 `;
 
 const NavigationList = styled.ul`
@@ -50,7 +60,7 @@ const NavigationLink = styled(Link)`
   flex-direction: column;
   align-items: center;
   gap: var(--spacing-1);
-  padding: var(--spacing-2);
+  padding: 5;
   color: ${props => props.active ? 'var(--primary)' : 'var(--gray-600)'};
   text-decoration: none;
   font-size: var(--font-size-xs);
@@ -59,14 +69,20 @@ const NavigationLink = styled(Link)`
   border-radius: var(--radius-lg);
   
   &:hover {
-    color: var(--primary);
+    color: black;
     background: var(--primary-light);
   }
   
   svg {
-    width: 20px;
-    height: 20px;
+    width: 25px;
+    height: 25px;
   }
+<<<<<<< HEAD
+=======
+  // @media(max-width:720px){
+   
+  // }  
+>>>>>>> 46aac94 (Enhanced)
 `;
 
 const Navigation = () => {

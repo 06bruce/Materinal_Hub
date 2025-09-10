@@ -36,7 +36,7 @@ const HeroSection = styled.section`
     content: "";
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.5); /* adjust opacity */
+    background: rgba(2, 1, 1, 0.5); /* adjust opacity */
     z-index: 1;
   }
 
