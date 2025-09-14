@@ -31,12 +31,12 @@ const AppContainer = styled.div`
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(135deg, var(--gray-50) 0%, var(--primary-light) 100%);
+  background: linear-gradient(135deg, #f05d5dff 0%, #7405058b 100%);
 `;
 
 const MainContent = styled.main`
   flex: 1;
-  padding-top: 80px; // Account for fixed header
+  padding-top: 70px; // Account for fixed header
 `;
 
 function App() {

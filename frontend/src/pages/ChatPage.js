@@ -16,11 +16,12 @@ const ChatHeader = styled.div`
   background: var(--white);
   border-radius: var(--radius-xl);
   padding: var(--spacing-4);
-  margin-bottom: var(--spacing-4);
+  margin-bottom: var(--spacing-4);  
   box-shadow: var(--shadow-sm);
   display: flex;
   align-items: center;
   gap: var(--spacing-4);
+  height: 3.5rem;
 `;
 
 const MessagesContainer = styled.div`
@@ -65,7 +66,7 @@ const MessageContent = styled.div`
 `;
 
 const WHODataCard = styled.div`
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #141f4fff 0%, #19052cff 100%);
   color: white;
   border-radius: var(--radius-lg);
   padding: var(--spacing-4);

@@ -17,28 +17,21 @@ const NavigationContainer = styled.nav`
   left: 0;
   right: 0;
   z-index: 1000;
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(254, 253, 254, 0.31);
+  height: 60px;
+  width: 100%
   border-top: 1px solid var(--gray-200);
-<<<<<<< HEAD
-  border-radius: 30px 30px 0 0;
+  border-radius: 20px 20px 20px 20px;
   padding: var(--spacing-3) var(--spacing-5);
-  box-shadow: 0 -6px 12px rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(70px);
+  box-shadow: 0 -6px 12px rgba(255, 255, 255, 0.47);
+  backdrop-filter: blur(45%);
   transition: all 0.3s ease-in-out;
-=======
-  border-radius:  20px 20px;
-  padding: 10px;
-  box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
   margin-bottom: 10px;
-
->>>>>>> 46aac94 (Enhanced)
-
+  
   @media (min-width: 769px) {
     display: block;
     border-radius: 10px 10px ;
-    }
-
-    
+    } 
 `;
 
 const NavigationList = styled.ul`
@@ -61,7 +54,7 @@ const NavigationLink = styled(Link)`
   align-items: center;
   gap: var(--spacing-1);
   padding: 5;
-  color: ${props => props.active ? 'var(--primary)' : 'var(--gray-600)'};
+  color: ${props => props.active ? 'var(--primary)' : 'var(--white-600)'};
   text-decoration: none;
   font-size: var(--font-size-xs);
   font-weight: 500;
@@ -74,15 +67,12 @@ const NavigationLink = styled(Link)`
   }
   
   svg {
-    width: 25px;
-    height: 25px;
+    width: 20px;
+    height: 20px;
   }
-<<<<<<< HEAD
-=======
-  // @media(max-width:720px){
+  @media(max-width:720px){
    
-  // }  
->>>>>>> 46aac94 (Enhanced)
+  }  
 `;
 
 const Navigation = () => {
@@ -93,33 +83,33 @@ const Navigation = () => {
     {
       path: '/',
       icon: Home,
-      label: { en: 'Home', rw: 'Ahabanza',  },
+      label: { en: 'Home' },
       exact: true
     },
     {
       path: '/chat',
       icon: MessageCircle,
-      label: { en: 'Chat', rw: 'Ikiganiro' }
+      label: { en: 'Chat'}
     },
     {
       path: '/pregnancy-tracker',
       icon: Calendar,
-      label: { en: 'Tracker', rw: 'Umugenzuzi' }
+      label: { en: 'Tracker' }
     },
     {
       path: '/dads-corner',
       icon: Users,
-      label: { en: 'Dads', rw: 'Ababyeyi b’igitsina gabo' }
+      label: { en: 'Dads' }
     },
     {
       path: '/health-centers',
       icon: MapPin,
-      label: { en: 'Centers', rw: 'Ibigo nderabuzima' }
+      label: { en: 'Centers' }
     },
     {
       path: '/mental-health',
       icon: Brain,
-      label: { en: 'Mental', rw: 'Ubuzima bwo mu mutwe' }
+      label: { en: 'Mental' }
     }
   ];
 
@@ -142,7 +132,7 @@ const Navigation = () => {
               <NavigationLink to={item.path} active={active}>
                 <Icon />
                 <span>{item.label[language] || item.label.en}</span>
-                </NavigationLink>
+              </NavigationLink>
             </NavigationItem>
           );
         })}

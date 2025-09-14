@@ -29,20 +29,20 @@ const HeroSection = styled.section`
   overflow: hidden;
 
   /* Background Image */
-  background: url('https://media.istockphoto.com/id/2158853819/photo/happy-family-embracing-in-nature.jpg?s=612x612&w=0&k=20&c=EHRo4237ZBdKJwCzFm3r90OUriXNMTvtwZGZh1-2RIs=') center/cover no-repeat;
+  background: url('https://media.istockphoto.com/id/2158853819/photo/happy-family-embracing-in-nature.jpg?s=612x612&w=0&k=20&c=EHRo4237ZBdKJwCzFm3r90OUriXNMTvtwZGZh1-2RIs=') center/cover repeat;
 
-  /* Dark overlay with 50% opacity */
+  /* Dark overlay with 45% opacity */
   &::before {
     content: "";
     position: absolute;
     inset: 0;
-    background: rgba(2, 1, 1, 0.5); /* adjust opacity */
+    background: rgba(8, 4, 4, 0.69); /* adjust opacity */
     z-index: 1;
   }
 
   @media (max-width: 768px) {
     padding: var(--spacing-12) 0 var(--spacing-8);
-  }
+  } 
 `;
 
 const HeroContent = styled.div`

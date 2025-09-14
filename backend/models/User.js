@@ -6,7 +6,8 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Name is required'],
     trim: true,
-    maxlength: [100, 'Name cannot exceed 100 characters']
+    maxlength: [100, 'Name cannot exceed 100 characters'],
+    minlenght: [2, 'name cannot below 2 characters']
   },
   email: {
     type: String,
@@ -29,8 +30,8 @@ const userSchema = new mongoose.Schema({
   },
   age: {
     type: Number,
-    min: [13, 'Age must be at least 13'],
-    max: [100, 'Age cannot exceed 100']
+    min: [0, 'Age must be at least 1'],
+    max: [140, 'Age cannot exceed 100']
   },
   isPregnant: {
     type: Boolean,

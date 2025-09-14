@@ -6,7 +6,7 @@ const ChatContext = createContext();
 const initialState = {
   messages: [],
   isTyping: false,
-  language: 'en', // Default to Kinyarwanda
+  language: 'en', // Default to English
   userProfile: null,
   pregnancyWeek: null,
   isOffline: false,

@@ -7,7 +7,6 @@ const FooterContainer = styled.footer`
   color: var(--white);
   padding: var(--spacing-12) 0 var(--spacing-8);
   margin-top: auto;
-  border-radius: 10px;
   
   @media (max-width: 768px) {
     padding: var(--spacing-8) 0 var(--spacing-6);

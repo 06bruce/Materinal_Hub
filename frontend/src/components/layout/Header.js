@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { 
@@ -20,32 +20,31 @@ const HeaderContainer = styled.header`
   left: 0;
   right: 0;
   z-index: 1000;
-  background: rgba(241, 171, 171, 0.95);
-  backdrop-filter: blur(10px);
+  background: rgba(241, 171, 171, 0.92);
+  backdrop-filter: blur(30%);
   border-bottom: 1px solid var(--gray-200);
   padding: 0 var(--spacing-4);
 `;
 
 const HeaderContent = styled.div`
-  max-width: 1200px;
+  width: 100%;
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 80px;
-`;
+  height: 60px;`;
 const Logo = styled(Link)`
   display: flex;
   align-items: center;
-  gap: var(--spacing-3);
+  gap: var(--spacing-1);
   text-decoration: none;
   color: var(--primary);
   font-weight: 700;
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-x4);
 
   svg {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 20px;
   }
 
   span {
@@ -63,18 +62,16 @@ const HeaderActions = styled.div`
 const LanguageButton = styled.button`
   display: flex;
   align-items: center;
+  background: rgba(254, 253, 254, 0.19);
   gap: var(--spacing-2);
   padding: var(--spacing-2) var(--spacing-3);
-  border: 2px solid var(--gray-200);
   border-radius: var(--radius-lg);
-  background: var(--white);
   color: var(--gray-700);
   font-weight: 500;
   cursor: pointer;
   transition: all var(--transition-normal);
   
   &:hover {
-    border-color: var(--primary);
     color: var(--primary);
   }
 `;
@@ -84,12 +81,15 @@ const UserMenuButton = styled.button`
   align-items: center;
   gap: var(--spacing-2);
   padding: var(--spacing-2) var(--spacing-3);
-  border: 2px solid var(--gray-200);
+  // border: 2px solid var(--gray-200);
   border-radius: var(--radius-lg);
   background: var(--white);
   color: var(--gray-700);
   font-weight: 500;
+  height: 36px;
+  text-decoration: none;
   cursor: pointer;
+  background: rgba(254, 253, 254, 0.19);
   transition: all var(--transition-normal);
   
   &:hover {
