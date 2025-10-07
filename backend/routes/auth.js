@@ -4,6 +4,7 @@ const { body } = require('express-validator');
 const User = require('../models/User');
 const { protect } = require('../middleware/auth');
 const { handleValidationErrors } = require('../middleware/validate');
+const { validatePregnancyData } = require('../utils/pregnancyUtils');
 
 const router = express.Router();
 
@@ -20,9 +21,11 @@ const generateToken = (id) => {
 router.post('/register', [
   body('name')
     .trim()
+    .customSanitizer((v) => (v === '' ? undefined : v))
     .isLength({ min: 2, max: 100 })
     .withMessage('Name must be between 2 and 100 characters'),
   body('email')
+    .customSanitizer((v) => (v === '' ? undefined : v))
     .isEmail()
     .normalizeEmail()
     .withMessage('Please enter a valid email'),
@@ -30,19 +33,32 @@ router.post('/register', [
     .isLength({ min: 6 })
     .withMessage('Password must be at least 6 characters'),
   body('phone')
-    .optional()
+    .optional({ nullable: true })
+    .customSanitizer(v => v === '' ? undefined : v)
     .matches(/^\+?[\d\s-()]+$/)
     .withMessage('Please enter a valid phone number'),
   body('age')
-    .optional()
+    .optional({ nullable: true })
+    .customSanitizer(v => v === '' ? undefined : v)
+    .toInt()
     .isInt({ min: 13, max: 100 })
     .withMessage('Age must be between 13 and 100'),
   body('isPregnant')
-    .optional()
+    .optional({ nullable: true })
+    .customSanitizer((v) => {
+      if (typeof v === 'string') {
+        if (v === 'on' || v === 'true' || v === '1') return true;
+        if (v === 'off' || v === 'false' || v === '0' || v === '') return false;
+      }
+      return v;
+    })
+    .toBoolean()
     .isBoolean()
     .withMessage('isPregnant must be a boolean'),
   body('pregnancyStartDate')
-    .optional()
+    .optional({ nullable: true })
+    .customSanitizer(v => v === '' ? undefined : v)
+    .toDate()
     .isISO8601()
     .withMessage('Please enter a valid date'),
   handleValidationErrors
@@ -75,19 +91,20 @@ router.post('/register', [
       });
     }
 
-    // Calculate due date and current week if pregnant
-    let dueDate = null;
-    let currentWeek = null;
-    
-    if (isPregnant && pregnancyStartDate) {
-      const startDate = new Date(pregnancyStartDate);
-      dueDate = new Date(startDate);
-      dueDate.setDate(dueDate.getDate() + 280); // 40 weeks = 280 days
-      
-      const today = new Date();
-      const weeksDiff = Math.floor((today - startDate) / (1000 * 60 * 60 * 24 * 7));
-      currentWeek = Math.max(0, Math.min(40, weeksDiff));
+    // Validate and calculate pregnancy data
+    const pregnancyValidation = validatePregnancyData({
+      isPregnant,
+      pregnancyStartDate
+    });
+
+    if (!pregnancyValidation.isValid) {
+      return res.status(400).json({
+        success: false,
+        message: pregnancyValidation.error
+      });
     }
+
+    const { dueDate, currentWeek } = pregnancyValidation.data;
 
     // Create user
     const user = await User.create({
@@ -281,23 +298,24 @@ router.put('/profile', [
       preferences
     } = req.body;
 
-    // Calculate due date and current week if pregnancy status changed
+    // Validate and calculate pregnancy data if changed
     let dueDate = req.user.dueDate;
     let currentWeek = req.user.currentWeek;
     
     if (isPregnant !== undefined && isPregnant !== req.user.isPregnant) {
-      if (isPregnant && pregnancyStartDate) {
-        const startDate = new Date(pregnancyStartDate);
-        dueDate = new Date(startDate);
-        dueDate.setDate(dueDate.getDate() + 280);
-        
-        const today = new Date();
-        const weeksDiff = Math.floor((today - startDate) / (1000 * 60 * 60 * 24 * 7));
-        currentWeek = Math.max(0, Math.min(40, weeksDiff));
-      } else {
-        dueDate = null;
-        currentWeek = null;
+      const pregnancyValidation = validatePregnancyData({
+        isPregnant,
+        pregnancyStartDate
+      });
+
+      if (!pregnancyValidation.isValid) {
+        return res.status(400).json({
+          success: false,
+          message: pregnancyValidation.error
+        });
       }
+
+      ({ dueDate, currentWeek } = pregnancyValidation.data);
     }
 
     // Update user
