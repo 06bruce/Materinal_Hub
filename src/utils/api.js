@@ -3,7 +3,7 @@ import axios from 'axios';
 // API Configuration
 const API_CONFIG = {
   BASE_URL: process.env.REACT_APP_API_URL || 'https://maternal-server.onrender.com',
-  TIMEOUT: 10000,
+  TIMEOUT: 180000, // 3 minutes to allow for Render cold starts
   ENDPOINTS: {
     CHAT: '/api/chat',
     HEALTH: '/health',
