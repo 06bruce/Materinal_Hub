@@ -83,6 +83,7 @@ export const api = {
   // Health endpoints
   health: {
     getCenters: () => apiClient.get('/api/health-centers'),
+    getCentersBySector: (district, sector) => apiClient.get(`/api/health-centers/sector/${district}/${sector}`),
     getEmergencyContacts: () => apiClient.get('/api/emergency-contacts'),
   },
 
