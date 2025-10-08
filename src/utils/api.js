@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // API Configuration
 const API_CONFIG = {
-  BASE_URL: process.env.REACT_APP_API_URL || 'http://localhost:3001',
+  BASE_URL: process.env.REACT_APP_API_URL || 'https://maternal-server.onrender.com',
   TIMEOUT: 10000,
   ENDPOINTS: {
     CHAT: '/api/chat',
