@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { Calendar, Baby, Heart, Scale, Info } from 'lucide-react';
+import { Calendar, Baby, Heart, Scale, Info, Loader } from 'lucide-react';
 import { useUser } from '../context/UserContext';
+import axios from 'axios';
+import toast from 'react-hot-toast';
 
 const TrackerContainer = styled.div`
   max-width: 1000px;
@@ -185,6 +187,10 @@ const PregnancyTracker = () => {
   const { preferences, setPregnancyDates, calculatePregnancyWeek, getDaysUntilDue } = useUser();
   const [startDate, setStartDate] = useState(preferences.pregnancyStartDate || '');
   const [dueDate, setDueDate] = useState(preferences.dueDate || '');
+  const [weekInfo, setWeekInfo] = useState(null);
+  const [loadingInfo, setLoadingInfo] = useState(false);
+  
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
   const currentWeek = calculatePregnancyWeek() || preferences.currentWeek || 0;
   const daysUntilDue = getDaysUntilDue();
@@ -196,20 +202,36 @@ const PregnancyTracker = () => {
     }
   };
 
-  const weekInfo = {
-    rw: {
-      baby: "Umwana wawe afite uburebure bwa cm 2.5 kandi afite ibiro bya gram 28.",
-      mother: "Ushobora kumva ububabare mu nda kandi ushobora kumva umwana akina.",
-      tips: "Fata vitamini zawe buri munsi, unywa amazi menshi, kandi ujya kwa muganga."
-    },
-    en: {
-      baby: "Your baby is about 2.5 cm long and weighs about 28 grams.",
-      mother: "You may feel abdominal pain and you may feel the baby moving.",
-      tips: "Take your vitamins daily, drink plenty of water, and see your doctor."
-    }
-  };
+  // Fetch AI-generated pregnancy info when week changes
+  useEffect(() => {
+    const fetchWeekInfo = async () => {
+      if (currentWeek > 0 && currentWeek <= 42) {
+        setLoadingInfo(true);
+        try {
+          const language = preferences.language || 'en';
+          const response = await axios.get(`${API_URL}/api/pregnancy/week-info`, {
+            params: { week: currentWeek, language }
+          });
+          
+          if (response.data.success) {
+            setWeekInfo(response.data.info);
+          }
+        } catch (error) {
+          console.error('Error fetching week info:', error);
+          // Set fallback info
+          setWeekInfo({
+            babyDevelopment: `Week ${currentWeek}: Your baby is growing and developing.`,
+            motherExperience: "You may experience various pregnancy symptoms.",
+            weeklyTips: "Stay hydrated, eat well, and rest when needed."
+          });
+        } finally {
+          setLoadingInfo(false);
+        }
+      }
+    };
 
-  const currentInfo = weekInfo.rw; // Default to Kinyarwanda
+    fetchWeekInfo();
+  }, [currentWeek, preferences.language, API_URL]);
 
   if (!preferences.pregnancyStartDate) {
     return (
@@ -299,21 +321,28 @@ const PregnancyTracker = () => {
         <h3>
           <Info size={20} />
           Week {currentWeek} Information
+          {loadingInfo && <Loader size={16} style={{ marginLeft: '10px', animation: 'spin 1s linear infinite' }} />}
         </h3>
-        <div className="info-grid">
-          <div className="info-item">
-            <h4>Baby Development</h4>
-            <p>{currentInfo.baby}</p>
+        {weekInfo ? (
+          <div className="info-grid">
+            <div className="info-item">
+              <h4>🍼 Baby Development</h4>
+              <p>{weekInfo.babyDevelopment}</p>
+            </div>
+            <div className="info-item">
+              <h4>💝 How You May Feel</h4>
+              <p>{weekInfo.motherExperience}</p>
+            </div>
+            <div className="info-item">
+              <h4>💡 Tips for This Week</h4>
+              <p>{weekInfo.weeklyTips}</p>
+            </div>
           </div>
-          <div className="info-item">
-            <h4>How You May Feel</h4>
-            <p>{currentInfo.mother}</p>
-          </div>
-          <div className="info-item">
-            <h4>Tips for This Week</h4>
-            <p>{currentInfo.tips}</p>
-          </div>
-        </div>
+        ) : (
+          <p style={{ textAlign: 'center', padding: '20px', color: 'var(--gray-600)' }}>
+            {loadingInfo ? 'Loading personalized information...' : 'Information not available'}
+          </p>
+        )}
       </WeekInfo>
     </TrackerContainer>
   );
