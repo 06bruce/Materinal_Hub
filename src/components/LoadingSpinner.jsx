@@ -13,14 +13,14 @@ const LoadingContainer = styled.div`
   align-items: center;
   justify-content: center;
   padding: var(--spacing-6);
-  min-height: ${props => props.fullHeight ? '100vh' : '200px'};
-  background: ${props => props.overlay ? 'rgba(255, 255, 255, 0.9)' : 'transparent'};
-  position: ${props => props.overlay ? 'fixed' : 'relative'};
-  top: ${props => props.overlay ? '0' : 'auto'};
-  left: ${props => props.overlay ? '0' : 'auto'};
-  right: ${props => props.overlay ? '0' : 'auto'};
-  bottom: ${props => props.overlay ? '0' : 'auto'};
-  z-index: ${props => props.overlay ? '9999' : 'auto'};
+  min-height: ${props => props.$fullHeight ? '100vh' : '200px'};
+  background: ${props => props.$overlay ? 'rgba(255, 255, 255, 0.9)' : 'transparent'};
+  position: ${props => props.$overlay ? 'fixed' : 'relative'};
+  top: ${props => props.$overlay ? '0' : 'auto'};
+  left: ${props => props.$overlay ? '0' : 'auto'};
+  right: ${props => props.$overlay ? '0' : 'auto'};
+  bottom: ${props => props.$overlay ? '0' : 'auto'};
+  z-index: ${props => props.$overlay ? '9999' : 'auto'};
 `;
 
 const Spinner = styled.div`
@@ -45,7 +45,7 @@ const LoadingSpinner = ({
   overlay = false 
 }) => {
   return (
-    <LoadingContainer fullHeight={fullHeight} overlay={overlay}>
+    <LoadingContainer $fullHeight={fullHeight} $overlay={overlay}>
       <Spinner withText={!!text}>
         <Loader2 size={size} />
       </Spinner>

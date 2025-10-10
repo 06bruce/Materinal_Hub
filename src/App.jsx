@@ -28,9 +28,20 @@ import TermsPage from './pages/TermsPage';
 import SupportPage from './pages/SupportPage';
 import FAQPage from './pages/FAQPage';
 
+// Admin Pages
+import AdminLoginPage from './pages/AdminLoginPage';
+import AdminDashboard from './pages/AdminDashboard';
+import AdminUsers from './pages/AdminUsers';
+import AdminUserEdit from './pages/AdminUserEdit';
+import AdminPregnancy from './pages/AdminPregnancy';
+import AdminRegister from './pages/AdminRegister';
+import AdminLayout from './components/layout/AdminLayout';
+import AdminRoute from './components/AdminRoute';
+
 // Context
 import { ChatProvider } from './context/ChatContext';
 import { UserProvider } from './context/UserContext';
+import { AdminProvider } from './context/AdminContext';
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -49,46 +60,69 @@ function App() {
     <ThemeProvider theme={theme}>
       <GlobalStyles />
       <ErrorBoundary>
-        <UserProvider>
-          <ChatProvider>
-            <AppContainer>
-            <Helmet>
-              <title>Maternal Hub Chatbot - Kinyarwanda Guide</title>
-              <meta name="description" content="Your trusted pregnancy and postpartum guide — anytime, anywhere, in your language." />
-              <meta name="keywords" content="maternal health, pregnancy, postpartum, Rwanda, Kinyarwanda, chatbot, health guide" />
-              <meta property="og:title" content="Maternal Hub" />
-              <meta property="og:description" content="Your trusted pregnancy and postpartum guide — anytime, anywhere, in your language." />
-              <meta property="og:type" content="website" />
-            </Helmet>
-            
-            <Header />
-            <Navigation />
-            
-            <MainContent>
-              <ErrorBoundary>
-                <Routes>
-                  <Route path="/" element={<HomePage />} />
-                  <Route path="/chat" element={<ChatPage />} />
-                  <Route path="/pregnancy-tracker" element={<PregnancyTracker />} />
-                  <Route path="/dads-corner" element={<DadsCorner />} />
-                  <Route path="/health-centers" element={<HealthCenters />} />
-                  <Route path="/mental-health" element={<MentalHealth />} />
-                  <Route path="/about" element={<AboutPage />} />
-                  <Route path="/login" element={<LoginPage />} />
-                  <Route path="/profile" element={<ProfilePage />} />
-                  <Route path="/terms" element={<TermsPage />} />
-                  <Route path="/faq" element={<FAQPage/>} />
-                  <Route path="/privacy" element={<PrivacyPage/>} />
-                  <Route path="/support" element={<SupportPage/>} />
-                </Routes>
-              </ErrorBoundary>
-            </MainContent>
-            
-            <Footer />
-          </AppContainer>
-        </ChatProvider>
-      </UserProvider>
-    </ErrorBoundary>
+        <AdminProvider>
+          <UserProvider>
+            <ChatProvider>
+              <Routes>
+                {/* Admin Routes */}
+                <Route path="/admin/login" element={<AdminLoginPage />} />
+                <Route path="/admin/*" element={
+                  <AdminRoute>
+                    <AdminLayout>
+                      <Routes>
+                        <Route path="dashboard" element={<AdminDashboard />} />
+                        <Route path="users" element={<AdminUsers />} />
+                        <Route path="users/:id/edit" element={<AdminUserEdit />} />
+                        <Route path="pregnancy" element={<AdminPregnancy />} />
+                        <Route path="register" element={<AdminRegister />} />
+                      </Routes>
+                    </AdminLayout>
+                  </AdminRoute>
+                } />
+
+                {/* User Routes */}
+                <Route path="/*" element={
+                  <AppContainer>
+                    <Helmet>
+                      <title>Maternal Hub Chatbot - Kinyarwanda Guide</title>
+                      <meta name="description" content="Your trusted pregnancy and postpartum guide — anytime, anywhere, in your language." />
+                      <meta name="keywords" content="maternal health, pregnancy, postpartum, Rwanda, Kinyarwanda, chatbot, health guide" />
+                      <meta property="og:title" content="Maternal Hub" />
+                      <meta property="og:description" content="Your trusted pregnancy and postpartum guide — anytime, anywhere, in your language." />
+                      <meta property="og:type" content="website" />
+                    </Helmet>
+                    
+                    <Header />
+                    <Navigation />
+                    
+                    <MainContent>
+                      <ErrorBoundary>
+                        <Routes>
+                          <Route path="/" element={<HomePage />} />
+                          <Route path="/chat" element={<ChatPage />} />
+                          <Route path="/pregnancy-tracker" element={<PregnancyTracker />} />
+                          <Route path="/dads-corner" element={<DadsCorner />} />
+                          <Route path="/health-centers" element={<HealthCenters />} />
+                          <Route path="/mental-health" element={<MentalHealth />} />
+                          <Route path="/about" element={<AboutPage />} />
+                          <Route path="/login" element={<LoginPage />} />
+                          <Route path="/profile" element={<ProfilePage />} />
+                          <Route path="/terms" element={<TermsPage />} />
+                          <Route path="/faq" element={<FAQPage/>} />
+                          <Route path="/privacy" element={<PrivacyPage/>} />
+                          <Route path="/support" element={<SupportPage/>} />
+                        </Routes>
+                      </ErrorBoundary>
+                    </MainContent>
+                    
+                    <Footer />
+                  </AppContainer>
+                } />
+              </Routes>
+            </ChatProvider>
+          </UserProvider>
+        </AdminProvider>
+      </ErrorBoundary>
     </ThemeProvider>
   );
 }
