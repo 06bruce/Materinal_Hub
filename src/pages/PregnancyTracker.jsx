@@ -215,15 +215,14 @@ const PregnancyTracker = () => {
           
           if (response.data.success) {
             setWeekInfo(response.data.info);
+          } else {
+            toast.error('Failed to load pregnancy information');
+            setWeekInfo(null);
           }
         } catch (error) {
           console.error('Error fetching week info:', error);
-          // Set fallback info
-          setWeekInfo({
-            babyDevelopment: `Week ${currentWeek}: Your baby is growing and developing.`,
-            motherExperience: "You may experience various pregnancy symptoms.",
-            weeklyTips: "Stay hydrated, eat well, and rest when needed."
-          });
+          toast.error('Could not load AI-generated content. Please try again.');
+          setWeekInfo(null);
         } finally {
           setLoadingInfo(false);
         }
