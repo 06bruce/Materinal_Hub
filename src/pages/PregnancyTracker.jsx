@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { Calendar, Baby, Heart, Scale, Info, Loader } from 'lucide-react';
 import { useUser } from '../context/UserContext';
@@ -203,34 +203,34 @@ const PregnancyTracker = () => {
   };
 
   // Fetch AI-generated pregnancy info when week changes
-  useEffect(() => {
-    const fetchWeekInfo = async () => {
-      if (currentWeek > 0 && currentWeek <= 42) {
-        setLoadingInfo(true);
-        try {
-          const language = preferences.language || 'en';
-          const response = await axios.get(`${API_URL}/api/pregnancy/week-info`, {
-            params: { week: currentWeek, language }
-          });
-          
-          if (response.data.success) {
-            setWeekInfo(response.data.info);
-          } else {
-            toast.error('Failed to load pregnancy information');
-            setWeekInfo(null);
-          }
-        } catch (error) {
-          console.error('Error fetching week info:', error);
-          toast.error('Could not load AI-generated content. Please try again.');
+  const fetchWeekInfo = useCallback(async () => {
+    if (currentWeek > 0 && currentWeek <= 42) {
+      setLoadingInfo(true);
+      try {
+        const language = preferences.language || 'en';
+        const response = await axios.get(`${API_URL}/api/pregnancy/week-info`, {
+          params: { week: currentWeek, language }
+        });
+        
+        if (response.data.success) {
+          setWeekInfo(response.data.info);
+        } else {
+          toast.error('Failed to load pregnancy information');
           setWeekInfo(null);
-        } finally {
-          setLoadingInfo(false);
         }
+      } catch (error) {
+        console.error('Error fetching week info:', error);
+        toast.error('Could not load AI-generated content. Please try again.');
+        setWeekInfo(null);
+      } finally {
+        setLoadingInfo(false);
       }
-    };
-
-    fetchWeekInfo();
+    }
   }, [currentWeek, preferences.language, API_URL]);
+
+  useEffect(() => {
+    fetchWeekInfo();
+  }, [fetchWeekInfo]);
 
   if (!preferences.pregnancyStartDate) {
     return (
