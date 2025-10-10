@@ -38,6 +38,9 @@ import AdminRegister from './pages/AdminRegister';
 import AdminLayout from './components/layout/AdminLayout';
 import AdminRoute from './components/AdminRoute';
 
+//Vercel Insight
+import { SpeedInsights } from "@vercel/speed-insights/react"
+
 // Context
 import { ChatProvider } from './context/ChatContext';
 import { UserProvider } from './context/UserContext';
