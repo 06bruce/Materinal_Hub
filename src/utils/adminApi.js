@@ -43,6 +43,7 @@ export const getUserById = async (id) => {
   }
 };
 
+//
 export const updateUser = async (id, data) => {
   try {
     const response = await axios.put(`${API_URL}/api/admin/users/${id}`, data, {

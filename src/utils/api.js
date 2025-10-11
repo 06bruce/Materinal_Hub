@@ -103,7 +103,7 @@ export const handleApiError = (error) => {
 };
 
 export const isNetworkError = (error) => {
-  return !error.response && error.message === 'Network Error';
+  return !error.response && error.message === ' Network Error';
 };
 
 // Fetch-based API request function (for compatibility with existing code)
