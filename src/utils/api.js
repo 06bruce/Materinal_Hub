@@ -16,7 +16,8 @@ const API_CONFIG = {
       PROFILE: '/api/auth/profile',
       ME: '/api/auth/me',
       LOGOUT: '/api/auth/logout',
-    }
+    },
+    APPOINTMENTS: '/api/appointments'
   },
   DEFAULT_HEADERS: {
     'Content-Type': 'application/json',
@@ -85,6 +86,16 @@ export const api = {
     getCenters: () => apiClient.get('/api/health-centers'),
     getCentersBySector: (district, sector) => apiClient.get(`/api/health-centers/sector/${district}/${sector}`),
     getEmergencyContacts: () => apiClient.get('/api/emergency-contacts'),
+  },
+
+  // Admin appointment endpoints
+  admin: {
+    appointments: {
+      getAll: () => apiClient.get('/api/admin/appointments'),
+      getById: (appointmentId) => apiClient.get(`/api/admin/appointments/${appointmentId}`),
+      update: (appointmentId, data) => apiClient.put(`/api/admin/appointments/${appointmentId}`, data),
+      delete: (appointmentId) => apiClient.delete(`/api/admin/appointments/${appointmentId}`)
+    }
   },
 
   // Health check

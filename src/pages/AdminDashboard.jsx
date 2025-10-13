@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { Users, UserCheck, Heart, Activity, TrendingUp, Calendar } from 'lucide-react';
+import { Users, UserCheck, Heart, Activity, TrendingUp, Calendar, Clock } from 'lucide-react';
 import { getAnalytics } from '../utils/adminApi';
+import { api } from '../utils/api';
 import LoadingSpinner from '../components/LoadingSpinner';
 
 const Container = styled.div`
@@ -159,22 +160,37 @@ const ErrorMessage = styled.div`
 
 const AdminDashboard = () => {
   const [analytics, setAnalytics] = useState(null);
+  const [appointmentStats, setAppointmentStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    fetchAnalytics();
+    fetchData();
   }, []);
 
-  const fetchAnalytics = async () => {
+  const fetchData = async () => {
     try {
       setLoading(true);
-      const data = await getAnalytics();
-      if (data.success) {
-        setAnalytics(data.analytics);
+      const [analyticsResponse, appointmentsResponse] = await Promise.all([
+        getAnalytics(),
+        api.admin.appointments.getAll()
+      ]);
+
+      if (analyticsResponse.success) {
+        setAnalytics(analyticsResponse.analytics);
       }
+
+      // Calculate appointment stats
+      const appointments = appointmentsResponse.data || [];
+      const upcoming = appointments.filter(a => a.status === 'upcoming').length;
+      const completed = appointments.filter(a => a.status === 'completed').length;
+      const today = appointments.filter(a =>
+        new Date(a.date).toDateString() === new Date().toDateString()
+      ).length;
+
+      setAppointmentStats({ total: appointments.length, upcoming, completed, today });
     } catch (err) {
-      setError(err.message || 'Failed to load analytics');
+      setError(err.message || 'Failed to load data');
     } finally {
       setLoading(false);
     }
@@ -196,7 +212,7 @@ const AdminDashboard = () => {
     );
   }
 
-  if (!analytics) return null;
+  if (!analytics || !appointmentStats) return null;
 
   const { totalUsers, genderDistribution, pregnancyStats, userActivity } = analytics;
 
@@ -245,6 +261,36 @@ const AdminDashboard = () => {
           <StatContent>
             <div className="label">New Users (30 days)</div>
             <div className="value">{userActivity.newUsers}</div>
+          </StatContent>
+        </StatCard>
+
+        <StatCard>
+          <IconWrapper bg="#dbeafe" color="#3b82f6">
+            <Calendar size={28} />
+          </IconWrapper>
+          <StatContent>
+            <div className="label">Total Appointments</div>
+            <div className="value">{appointmentStats.total}</div>
+          </StatContent>
+        </StatCard>
+
+        <StatCard>
+          <IconWrapper bg="#dcfce7" color="#16a34a">
+            <Clock size={28} />
+          </IconWrapper>
+          <StatContent>
+            <div className="label">Upcoming Appointments</div>
+            <div className="value">{appointmentStats.upcoming}</div>
+          </StatContent>
+        </StatCard>
+
+        <StatCard>
+          <IconWrapper bg="#e0f2fe" color="#0284c7">
+            <Calendar size={28} />
+          </IconWrapper>
+          <StatContent>
+            <div className="label">Today's Appointments</div>
+            <div className="value">{appointmentStats.today}</div>
           </StatContent>
         </StatCard>
       </StatsGrid>

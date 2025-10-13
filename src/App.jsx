@@ -35,13 +35,12 @@ import AdminUsers from './pages/AdminUsers';
 import AdminUserEdit from './pages/AdminUserEdit';
 import AdminPregnancy from './pages/AdminPregnancy';
 import AdminRegister from './pages/AdminRegister';
+import AdminAppointments from './pages/AdminAppointments';
 import AdminLayout from './components/layout/AdminLayout';
 import AdminRoute from './components/AdminRoute';
 
 //Vercel Insight
 import { SpeedInsights } from "@vercel/speed-insights/react"
-
-// Context
 import { ChatProvider } from './context/ChatContext';
 import { UserProvider } from './context/UserContext';
 import { AdminProvider } from './context/AdminContext';
@@ -75,6 +74,7 @@ function App() {
                     <AdminLayout>
                       <Routes>
                         <Route path="dashboard" element={<AdminDashboard />} />
+                        <Route path="appointments" element={<AdminAppointments />} />
                         <Route path="users" element={<AdminUsers />} />
                         <Route path="users/:id/edit" element={<AdminUserEdit />} />
                         <Route path="pregnancy" element={<AdminPregnancy />} />

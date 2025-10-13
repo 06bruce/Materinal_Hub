@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { LayoutDashboard, Users, Heart, LogOut, Menu, X, UserPlus } from 'lucide-react';
+import { LayoutDashboard, Users, Heart, LogOut, Menu, X, UserPlus, Calendar } from 'lucide-react';
 import { useAdmin } from '../../context/AdminContext';
 
 const Container = styled.div`
@@ -213,14 +213,9 @@ const AdminLayout = ({ children }) => {
             <span>Dashboard</span>
           </NavItem>
           
-          <NavItem to="/admin/users" onClick={() => setSidebarOpen(false)}>
-            <Users size={20} />
-            <span>User Management</span>
-          </NavItem>
-          
-          <NavItem to="/admin/pregnancy" onClick={() => setSidebarOpen(false)}>
-            <Heart size={20} />
-            <span>Pregnancy Monitoring</span>
+          <NavItem to="/admin/appointments" onClick={() => setSidebarOpen(false)}>
+            <Calendar size={20} />
+            <span>Appointments</span>
           </NavItem>
           
           {admin && admin.role === 'super_admin' && (

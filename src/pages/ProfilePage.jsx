@@ -13,11 +13,18 @@ import {
   Bell,
   Globe,
   Shield,
-  LogOut
+  LogOut,
+  Clock, 
+  CalendarCheck, 
+  MapPin, 
+  XCircle,
+  Loader
 } from 'lucide-react';
 import { useUser } from '../context/UserContext';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import AppointmentCalendar from '../components/AppointmentCalendar';
+import { api } from '../utils/api';
 
 const ProfileContainer = styled.div`
   max-width: 800px;
@@ -261,6 +268,69 @@ const StatLabel = styled.div`
   opacity: 0.9;
 `;
 
+const AppointmentsSection = styled.div`
+  margin-top: var(--spacing-6);
+`;
+
+const AppointmentCard = styled.div`
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-4);
+  margin-bottom: var(--spacing-3);
+  box-shadow: var(--shadow-sm);
+  border-left: 4px solid var(--primary);
+  
+  &.upcoming {
+    border-left-color: var(--success);
+  }
+  
+  &.past {
+    border-left-color: var(--gray-300);
+    opacity: 0.8;
+  }
+  
+  h3 {
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--spacing-2);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+  }
+  
+  .appointment-meta {
+    display: flex;
+    gap: var(--spacing-4);
+    margin-bottom: var(--spacing-2);
+    
+    div {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-1);
+      font-size: var(--font-size-sm);
+      color: var(--gray-600);
+    }
+  }
+  
+  .appointment-actions {
+    display: flex;
+    gap: var(--spacing-2);
+    margin-top: var(--spacing-3);
+    
+    button {
+      padding: var(--spacing-1) var(--spacing-3);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-sm);
+      cursor: pointer;
+    }
+    
+    .cancel-btn {
+      background: var(--red-100);
+      color: var(--red-600);
+      border: none;
+    }
+  }
+`;
+
 const ProfilePage = () => {
   const { user, isAuthenticated, logout, updateProfile } = useUser();
   const navigate = useNavigate();
@@ -277,6 +347,8 @@ const ProfilePage = () => {
       notifications: true
     }
   });
+  const [appointments, setAppointments] = useState([]);
+  const [loadingAppointments, setLoadingAppointments] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -360,6 +432,34 @@ const ProfilePage = () => {
 
   const currentWeek = calculatePregnancyWeek();
   const daysUntilDue = getDaysUntilDue();
+
+  const fetchAppointments = async () => {
+    setLoadingAppointments(true);
+    try {
+      const response = await api.appointments.getByUser();
+      setAppointments(response.data || []);
+    } catch (err) {
+      toast.error('Failed to load appointments');
+    } finally {
+      setLoadingAppointments(false);
+    }
+  };
+
+  const handleCancelAppointment = async (appointmentId) => {
+    try {
+      await api.appointments.cancel(appointmentId);
+      toast.success('Appointment cancelled');
+      fetchAppointments();
+    } catch (err) {
+      toast.error('Failed to cancel appointment');
+    }
+  };
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchAppointments();
+    }
+  }, [isAuthenticated]);
 
   if (!isAuthenticated) {
     return null;
@@ -596,6 +696,85 @@ const ProfilePage = () => {
             </InfoContent>
           </InfoItem>
         </InfoGrid>
+      </ProfileCard>
+
+      <ProfileCard
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+      >
+        <SectionTitle>
+          <CalendarCheck size={24} />
+          My Appointments
+        </SectionTitle>
+        
+        {loadingAppointments ? (
+          <div style={{ textAlign: 'center', padding: '2rem' }}>
+            <Loader size={32} className="animate-spin" />
+          </div>
+        ) : appointments.length > 0 ? (
+          <AppointmentsSection>
+            {appointments.map(appt => {
+              const isPast = new Date(appt.date) < new Date();
+              return (
+                <AppointmentCard key={appt.id} className={isPast ? 'past' : 'upcoming'}>
+                  <h3>
+                    <MapPin size={18} />
+                    {appt.centerName}
+                  </h3>
+                  <div className="appointment-meta">
+                    <div>
+                      <Calendar size={14} />
+                      {new Date(appt.date).toLocaleDateString()}
+                    </div>
+                    <div>
+                      <Clock size={14} />
+                      {appt.time}
+                    </div>
+                  </div>
+                  <div>Reason: {appt.reason.replace('_', ' ')}</div>
+                  {!isPast && (
+                    <div className="appointment-actions">
+                      <button 
+                        className="cancel-btn"
+                        onClick={() => handleCancelAppointment(appt.id)}
+                      >
+                        <XCircle size={14} /> Cancel
+                      </button>
+                    </div>
+                  )}
+                </AppointmentCard>
+              );
+            })}
+          </AppointmentsSection>
+        ) : (
+          <div style={{ textAlign: 'center', padding: '1rem', color: 'var(--gray-500)' }}>
+            No appointments scheduled
+          </div>
+        )}
+      </ProfileCard>
+
+      <ProfileCard
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+      >
+        <SectionTitle>
+          <Calendar size={24} />
+          Appointment Calendar
+        </SectionTitle>
+        
+        <AppointmentCalendar 
+          appointments={appointments}
+          onDateChange={(date) => {
+            // Optional: Scroll to appointments for that date
+            const dateStr = date.toISOString().split('T')[0];
+            const element = document.getElementById(`appt-${dateStr}`);
+            if (element) {
+              element.scrollIntoView({ behavior: 'smooth' });
+            }
+          }}
+        />
       </ProfileCard>
     </ProfileContainer>
   );
