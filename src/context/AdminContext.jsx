@@ -50,10 +50,13 @@ export const AdminProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
+      console.log('🔐 Admin login attempt to:', `${API_URL}/api/admin/login`);
       const response = await axios.post(`${API_URL}/api/admin/login`, {
         email,
         password
       });
+
+      console.log('✅ Login response:', response.data);
 
       if (response.data.success) {
         const { token, admin } = response.data;
@@ -65,9 +68,11 @@ export const AdminProvider = ({ children }) => {
       
       return { success: false, message: response.data.message };
     } catch (error) {
+      console.error('❌ Admin login error:', error);
+      console.error('Error details:', error.response?.data);
       return {
         success: false,
-        message: error.response?.data?.message || 'Login failed'
+        message: error.response?.data?.message || error.message || 'Login failed'
       };
     }
   };
