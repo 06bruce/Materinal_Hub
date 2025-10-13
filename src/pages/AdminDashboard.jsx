@@ -181,7 +181,8 @@ const AdminDashboard = () => {
       }
 
       // Calculate appointment stats
-      const appointments = appointmentsResponse.data || [];
+      // Backend returns { success, appointments, pagination }
+      const appointments = appointmentsResponse.data?.appointments || [];
       const upcoming = appointments.filter(a => a.status === 'upcoming').length;
       const completed = appointments.filter(a => a.status === 'completed').length;
       const today = appointments.filter(a =>
