@@ -40,7 +40,12 @@ const apiClient = axios.create({
 // Request interceptor to add auth token
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('authToken');
+    // Check if this is an admin request
+    const isAdminRequest = config.url?.includes('/admin/');
+    const token = isAdminRequest 
+      ? localStorage.getItem('adminToken') 
+      : localStorage.getItem('authToken');
+    
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -56,10 +61,20 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Token expired or invalid
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('maternalHealthUser');
-      window.location.href = '/login';
+      const isAdminRoute = window.location.pathname.startsWith('/admin');
+      const isAdminLoginPage = window.location.pathname === '/admin/login';
+      
+      if (isAdminRoute && !isAdminLoginPage) {
+        // Admin token expired - clear admin token and redirect to admin login
+        localStorage.removeItem('adminToken');
+        window.location.href = '/admin/login';
+      } else if (!isAdminRoute) {
+        // User token expired - clear user token and redirect to user login
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('maternalHealthUser');
+        window.location.href = '/login';
+      }
+      // If on admin login page, don't redirect - just let the error be handled
     }
     return Promise.reject(error);
   }
