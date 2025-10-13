@@ -242,7 +242,7 @@ const AdminLoginPage = () => {
           </FormGroup>
 
           <Button type="submit" disabled={loading}>
-            {loading ? <LoadingSpinner size="small" /> : 'Sign In'}
+            {loading ? <LoadingSpinner size={20} /> : 'Sign In'}
           </Button>
         </Form>
 
