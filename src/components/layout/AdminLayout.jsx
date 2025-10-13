@@ -218,6 +218,16 @@ const AdminLayout = ({ children }) => {
             <span>Appointments</span>
           </NavItem>
           
+          <NavItem to="/admin/users" onClick={() => setSidebarOpen(false)}>
+            <Users size={20} />
+            <span>User Management</span>
+          </NavItem>
+          
+          <NavItem to="/admin/pregnancy" onClick={() => setSidebarOpen(false)}>
+            <Heart size={20} />
+            <span>Pregnancy</span>
+          </NavItem>
+          
           {admin && admin.role === 'super_admin' && (
             <NavItem to="/admin/register" onClick={() => setSidebarOpen(false)}>
               <UserPlus size={20} />
