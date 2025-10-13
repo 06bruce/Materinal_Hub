@@ -231,10 +231,14 @@ const AdminAppointments = () => {
     try {
       setLoading(true);
       const response = await api.admin.appointments.getAll();
-      setAppointments(response.data || []);
+      console.log('Appointments response:', response.data);
+      // Backend returns { success, appointments, pagination }
+      const appointmentsData = response.data?.appointments || [];
+      setAppointments(appointmentsData);
     } catch (err) {
       toast.error('Failed to load appointments');
       console.error('Error fetching appointments:', err);
+      setAppointments([]); // Ensure it's always an array
     } finally {
       setLoading(false);
     }
@@ -245,10 +249,12 @@ const AdminAppointments = () => {
 
     // Filter by search term
     if (searchTerm) {
-      filtered = filtered.filter(appt =>
-        appt.userName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        appt.centerName?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      filtered = filtered.filter(appt => {
+        const userName = appt.userId?.name || appt.userName || '';
+        const centerName = appt.centerName || '';
+        return userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+               centerName.toLowerCase().includes(searchTerm.toLowerCase());
+      });
     }
 
     // Filter by status
@@ -311,17 +317,17 @@ const AdminAppointments = () => {
 
       <AppointmentsGrid>
         {filteredAppointments.map(appointment => (
-          <AppointmentCard key={appointment.id} status={appointment.status}>
+          <AppointmentCard key={appointment._id || appointment.id} status={appointment.status}>
             <AppointmentHeader>
-              <div className="appointment-id">#{appointment.id}</div>
+              <div className="appointment-id">#{appointment._id || appointment.id}</div>
               {getStatusBadge(appointment.status)}
             </AppointmentHeader>
 
             <UserInfo>
               <User size={20} color="var(--primary)" />
               <div>
-                <div className="user-name">{appointment.userName}</div>
-                <div className="user-email">{appointment.userEmail}</div>
+                <div className="user-name">{appointment.userId?.name || appointment.userName || 'N/A'}</div>
+                <div className="user-email">{appointment.userId?.email || appointment.userEmail || 'N/A'}</div>
               </div>
             </UserInfo>
 
@@ -374,7 +380,7 @@ const AdminAppointments = () => {
               <button className="edit">
                 <Edit size={14} /> Edit
               </button>
-              <button className="delete" onClick={() => handleDelete(appointment.id)}>
+              <button className="delete" onClick={() => handleDelete(appointment._id || appointment.id)}>
                 <Trash2 size={14} /> Delete
               </button>
             </AppointmentActions>
