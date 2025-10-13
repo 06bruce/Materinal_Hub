@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { LayoutDashboard, Users, Heart, LogOut, Menu, X, UserPlus, Calendar } from 'lucide-react';
+import { LayoutDashboard, Users, Heart, LogOut, Menu, X, UserPlus, Calendar, Settings } from 'lucide-react';
 import { useAdmin } from '../../context/AdminContext';
 
 const Container = styled.div`
@@ -234,6 +234,11 @@ const AdminLayout = ({ children }) => {
               <span>Create Admin</span>
             </NavItem>
           )}
+          
+          <NavItem to="/admin/settings" onClick={() => setSidebarOpen(false)}>
+            <Settings size={20} />
+            <span>Settings</span>
+          </NavItem>
         </Nav>
 
         <SidebarFooter>

@@ -36,6 +36,7 @@ import AdminUserEdit from './pages/AdminUserEdit';
 import AdminPregnancy from './pages/AdminPregnancy';
 import AdminRegister from './pages/AdminRegister';
 import AdminAppointments from './pages/AdminAppointments';
+import AdminSettings from './pages/AdminSettings';
 import AdminLayout from './components/layout/AdminLayout';
 import AdminRoute from './components/AdminRoute';
 
@@ -79,6 +80,7 @@ function App() {
                         <Route path="users/:id/edit" element={<AdminUserEdit />} />
                         <Route path="pregnancy" element={<AdminPregnancy />} />
                         <Route path="register" element={<AdminRegister />} />
+                        <Route path="settings" element={<AdminSettings />} />
                       </Routes>
                     </AdminLayout>
                   </AdminRoute>

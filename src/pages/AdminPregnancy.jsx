@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { Heart, Calendar, Clock, AlertCircle, TrendingUp } from 'lucide-react';
+import { Heart, Calendar, Clock, AlertCircle, TrendingUp, Search } from 'lucide-react';
 import { getPregnantUsers } from '../utils/adminApi';
 import LoadingSpinner from '../components/LoadingSpinner';
 
@@ -11,18 +11,50 @@ const Container = styled.div`
 `;
 
 const Header = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: var(--spacing-6);
+  flex-wrap: wrap;
+  gap: var(--spacing-4);
   
-  h1 {
-    font-size: var(--font-size-3xl);
-    font-weight: 700;
-    color: var(--gray-900);
-    margin-bottom: var(--spacing-2);
+  .header-left {
+    h1 {
+      font-size: var(--font-size-3xl);
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: var(--spacing-2);
+    }
+    
+    p {
+      color: var(--gray-600);
+      font-size: var(--font-size-lg);
+    }
+  }
+`;
+
+const SearchBox = styled.div`
+  position: relative;
+  
+  svg {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gray-400);
   }
   
-  p {
-    color: var(--gray-600);
-    font-size: var(--font-size-lg);
+  input {
+    padding: var(--spacing-2) var(--spacing-3) var(--spacing-2) 40px;
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-sm);
+    min-width: 250px;
+    
+    &:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
   }
 `;
 
@@ -220,11 +252,25 @@ const EmptyState = styled.div`
 
 const AdminPregnancy = () => {
   const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchPregnantUsers();
   }, []);
+
+  useEffect(() => {
+    if (searchTerm) {
+      const filtered = users.filter(user =>
+        user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredUsers(filtered);
+    } else {
+      setFilteredUsers(users);
+    }
+  }, [searchTerm, users]);
 
   const fetchPregnantUsers = async () => {
     try {
@@ -232,6 +278,7 @@ const AdminPregnancy = () => {
       const data = await getPregnantUsers();
       if (data.success) {
         setUsers(data.users);
+        setFilteredUsers(data.users);
       }
     } catch (err) {
       console.error('Failed to load pregnant users:', err);
@@ -248,22 +295,33 @@ const AdminPregnancy = () => {
     );
   }
 
-  const firstTrimester = users.filter(u => u.trimester === 'First').length;
-  const secondTrimester = users.filter(u => u.trimester === 'Second').length;
-  const thirdTrimester = users.filter(u => u.trimester === 'Third').length;
-  const dueSoon = users.filter(u => u.daysUntilDue && u.daysUntilDue <= 30).length;
+  const firstTrimester = filteredUsers.filter(u => u.trimester === 'First').length;
+  const secondTrimester = filteredUsers.filter(u => u.trimester === 'Second').length;
+  const thirdTrimester = filteredUsers.filter(u => u.trimester === 'Third').length;
+  const dueSoon = filteredUsers.filter(u => u.daysUntilDue && u.daysUntilDue <= 30).length;
 
   return (
     <Container>
       <Header>
-        <h1>Pregnancy Monitoring</h1>
-        <p>Track and monitor pregnancy progress for all users</p>
+        <div className="header-left">
+          <h1>Pregnancy Monitoring</h1>
+          <p>Track and monitor pregnancy progress for all users</p>
+        </div>
+        <SearchBox>
+          <Search size={18} />
+          <input
+            type="text"
+            placeholder="Search by name or email..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </SearchBox>
       </Header>
 
       <StatsBar>
         <StatCard>
           <div className="label">Total Pregnant Users</div>
-          <div className="value">{users.length}</div>
+          <div className="value">{filteredUsers.length}</div>
         </StatCard>
         <StatCard>
           <div className="label">First Trimester</div>
@@ -283,15 +341,15 @@ const AdminPregnancy = () => {
         </StatCard>
       </StatsBar>
 
-      {users.length === 0 ? (
+      {filteredUsers.length === 0 ? (
         <EmptyState>
           <Heart size={64} />
-          <h3>No Pregnant Users</h3>
-          <p>There are currently no users marked as pregnant in the system.</p>
+          <h3>No Pregnant Users {searchTerm && 'Found'}</h3>
+          <p>{searchTerm ? 'Try adjusting your search criteria.' : 'There are currently no users marked as pregnant in the system.'}</p>
         </EmptyState>
       ) : (
         <UsersGrid>
-          {users.map((user) => {
+          {filteredUsers.map((user) => {
             const progressPercentage = ((user.currentWeek || 0) / 40) * 100;
             
             return (

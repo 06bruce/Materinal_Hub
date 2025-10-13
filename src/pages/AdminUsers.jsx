@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { Search, Edit2, Trash2, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getUsers, deleteUser } from '../utils/adminApi';
@@ -205,6 +206,7 @@ const EmptyState = styled.div`
 `;
 
 const AdminUsers = () => {
+  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -271,8 +273,7 @@ const AdminUsers = () => {
   };
 
   const handleEdit = (userId) => {
-    // Navigate to edit page (to be implemented)
-    window.location.href = `/admin/users/${userId}/edit`;
+    navigate(`/admin/users/${userId}/edit`);
   };
 
   if (loading && users.length === 0) {

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { Users, UserCheck, Heart, Activity, TrendingUp, Calendar, Clock } from 'lucide-react';
 import { getAnalytics } from '../utils/adminApi';
@@ -43,6 +44,7 @@ const StatCard = styled.div`
   align-items: center;
   gap: var(--spacing-4);
   transition: transform 0.2s;
+  cursor: ${props => props.clickable ? 'pointer' : 'default'};
   
   &:hover {
     transform: translateY(-4px);
@@ -159,6 +161,7 @@ const ErrorMessage = styled.div`
 `;
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
   const [analytics, setAnalytics] = useState(null);
   const [appointmentStats, setAppointmentStats] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -225,7 +228,7 @@ const AdminDashboard = () => {
       </Header>
 
       <StatsGrid>
-        <StatCard>
+        <StatCard clickable onClick={() => navigate('/admin/users')}>
           <IconWrapper bg="#e0f2fe" color="#0284c7">
             <Users size={28} />
           </IconWrapper>
@@ -235,7 +238,7 @@ const AdminDashboard = () => {
           </StatContent>
         </StatCard>
 
-        <StatCard>
+        <StatCard clickable onClick={() => navigate('/admin/pregnancy')}>
           <IconWrapper bg="#fce7f3" color="#db2777">
             <Heart size={28} />
           </IconWrapper>
@@ -245,7 +248,7 @@ const AdminDashboard = () => {
           </StatContent>
         </StatCard>
 
-        <StatCard>
+        <StatCard clickable onClick={() => navigate('/admin/users')}>
           <IconWrapper bg="#dcfce7" color="#16a34a">
             <UserCheck size={28} />
           </IconWrapper>
@@ -255,7 +258,7 @@ const AdminDashboard = () => {
           </StatContent>
         </StatCard>
 
-        <StatCard>
+        <StatCard clickable onClick={() => navigate('/admin/users')}>
           <IconWrapper bg="#fef3c7" color="#d97706">
             <TrendingUp size={28} />
           </IconWrapper>
@@ -265,7 +268,7 @@ const AdminDashboard = () => {
           </StatContent>
         </StatCard>
 
-        <StatCard>
+        <StatCard clickable onClick={() => navigate('/admin/appointments')}>
           <IconWrapper bg="#dbeafe" color="#3b82f6">
             <Calendar size={28} />
           </IconWrapper>
@@ -275,7 +278,7 @@ const AdminDashboard = () => {
           </StatContent>
         </StatCard>
 
-        <StatCard>
+        <StatCard clickable onClick={() => navigate('/admin/appointments')}>
           <IconWrapper bg="#dcfce7" color="#16a34a">
             <Clock size={28} />
           </IconWrapper>
@@ -285,7 +288,7 @@ const AdminDashboard = () => {
           </StatContent>
         </StatCard>
 
-        <StatCard>
+        <StatCard clickable onClick={() => navigate('/admin/appointments')}>
           <IconWrapper bg="#e0f2fe" color="#0284c7">
             <Calendar size={28} />
           </IconWrapper>

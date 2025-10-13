@@ -103,8 +103,27 @@ export const api = {
     getEmergencyContacts: () => apiClient.get('/api/emergency-contacts'),
   },
 
-  // Admin appointment endpoints
+  // Admin endpoints (all verified with backend)
   admin: {
+    // Analytics
+    analytics: {
+      get: () => apiClient.get('/api/admin/analytics')
+    },
+    
+    // Users
+    users: {
+      getAll: (params) => apiClient.get('/api/admin/users', { params }),
+      getById: (userId) => apiClient.get(`/api/admin/users/${userId}`),
+      update: (userId, data) => apiClient.put(`/api/admin/users/${userId}`, data),
+      delete: (userId) => apiClient.delete(`/api/admin/users/${userId}`)
+    },
+    
+    // Pregnancy
+    pregnancy: {
+      getAll: () => apiClient.get('/api/admin/pregnant-users')
+    },
+    
+    // Appointments
     appointments: {
       getAll: () => apiClient.get('/api/admin/appointments'),
       getById: (appointmentId) => apiClient.get(`/api/admin/appointments/${appointmentId}`),

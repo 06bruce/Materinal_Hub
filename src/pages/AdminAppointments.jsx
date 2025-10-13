@@ -212,12 +212,120 @@ const LoadingSpinner = styled.div`
   }
 `;
 
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--spacing-4);
+`;
+
+const Modal = styled.div`
+  background: var(--white);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-6);
+  max-width: 500px;
+  width: 100%;
+  box-shadow: var(--shadow-xl);
+
+  h2 {
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    margin-bottom: var(--spacing-4);
+    color: var(--gray-900);
+  }
+`;
+
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+`;
+
+const FormGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+
+  label {
+    font-weight: 500;
+    color: var(--gray-700);
+    font-size: var(--font-size-sm);
+  }
+
+  input, select, textarea {
+    padding: var(--spacing-2) var(--spacing-3);
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-base);
+
+    &:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+`;
+
+const ModalActions = styled.div`
+  display: flex;
+  gap: var(--spacing-3);
+  justify-content: flex-end;
+  margin-top: var(--spacing-2);
+
+  button {
+    padding: var(--spacing-2) var(--spacing-4);
+    border-radius: var(--radius-md);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+
+    &.cancel {
+      background: var(--gray-100);
+      color: var(--gray-700);
+      border: none;
+
+      &:hover {
+        background: var(--gray-200);
+      }
+    }
+
+    &.submit {
+      background: var(--primary);
+      color: var(--white);
+      border: none;
+
+      &:hover {
+        background: var(--primary-dark);
+      }
+    }
+  }
+`;
+
 const AdminAppointments = () => {
   const [appointments, setAppointments] = useState([]);
   const [filteredAppointments, setFilteredAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingAppointment, setEditingAppointment] = useState(null);
+  const [editForm, setEditForm] = useState({
+    date: '',
+    time: '',
+    status: '',
+    notes: ''
+  });
 
   useEffect(() => {
     fetchAppointments();
@@ -263,6 +371,31 @@ const AdminAppointments = () => {
     }
 
     setFilteredAppointments(filtered);
+  };
+
+  const handleEdit = (appointment) => {
+    setEditingAppointment(appointment);
+    setEditForm({
+      date: appointment.date.split('T')[0],
+      time: appointment.time,
+      status: appointment.status,
+      notes: appointment.notes || ''
+    });
+    setShowEditModal(true);
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await api.admin.appointments.update(editingAppointment._id || editingAppointment.id, editForm);
+      toast.success('Appointment updated successfully');
+      setShowEditModal(false);
+      setEditingAppointment(null);
+      fetchAppointments();
+    } catch (err) {
+      toast.error('Failed to update appointment');
+      console.error('Error updating appointment:', err);
+    }
   };
 
   const handleDelete = async (appointmentId) => {
@@ -377,7 +510,7 @@ const AdminAppointments = () => {
             )}
 
             <AppointmentActions>
-              <button className="edit">
+              <button className="edit" onClick={() => handleEdit(appointment)}>
                 <Edit size={14} /> Edit
               </button>
               <button className="delete" onClick={() => handleDelete(appointment._id || appointment.id)}>
@@ -392,6 +525,70 @@ const AdminAppointments = () => {
         <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--gray-500)' }}>
           No appointments found matching your criteria.
         </div>
+      )}
+
+      {showEditModal && editingAppointment && (
+        <ModalOverlay onClick={() => setShowEditModal(false)}>
+          <Modal onClick={(e) => e.stopPropagation()}>
+            <h2>Edit Appointment</h2>
+            <Form onSubmit={handleEditSubmit}>
+              <FormGroup>
+                <label htmlFor="date">Date</label>
+                <input
+                  type="date"
+                  id="date"
+                  value={editForm.date}
+                  onChange={(e) => setEditForm({ ...editForm, date: e.target.value })}
+                  required
+                />
+              </FormGroup>
+
+              <FormGroup>
+                <label htmlFor="time">Time</label>
+                <input
+                  type="time"
+                  id="time"
+                  value={editForm.time}
+                  onChange={(e) => setEditForm({ ...editForm, time: e.target.value })}
+                  required
+                />
+              </FormGroup>
+
+              <FormGroup>
+                <label htmlFor="status">Status</label>
+                <select
+                  id="status"
+                  value={editForm.status}
+                  onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
+                  required
+                >
+                  <option value="upcoming">Upcoming</option>
+                  <option value="completed">Completed</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+              </FormGroup>
+
+              <FormGroup>
+                <label htmlFor="notes">Notes</label>
+                <textarea
+                  id="notes"
+                  value={editForm.notes}
+                  onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })}
+                  placeholder="Add any notes or comments..."
+                />
+              </FormGroup>
+
+              <ModalActions>
+                <button type="button" className="cancel" onClick={() => setShowEditModal(false)}>
+                  Cancel
+                </button>
+                <button type="submit" className="submit">
+                  Save Changes
+                </button>
+              </ModalActions>
+            </Form>
+          </Modal>
+        </ModalOverlay>
       )}
     </Container>
   );

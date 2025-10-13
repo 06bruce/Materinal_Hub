@@ -132,6 +132,8 @@ const HealthCenters = () => {
   const [error, setError] = useState(null);
   const [showSectorModal, setShowSectorModal] = useState(true);
   const [selectedLocation, setSelectedLocation] = useState(null);
+  const [userCoordinates, setUserCoordinates] = useState(null);
+  const [locating, setLocating] = useState(false);
 
   const fetchHealthCentersBySector = async (district, sector) => {
     try {
@@ -140,52 +142,128 @@ const HealthCenters = () => {
       
       // Call API with sector parameter
       const response = await api.health.getCentersBySector(district, sector);
-      setCenters(response.data.hospitals || []);
+      const hospitals = response.data.hospitals || [];
+      setCenters(hospitals);
       
-      if (response.data.hospitals.length === 0) {
-        toast.error('No hospitals found in this sector. Showing nearby options.');
+      if (hospitals.length === 0) {
+        toast.error('No hospitals found in this sector.');
       }
     } catch (err) {
       console.error('Failed to fetch health centers:', err);
       setError('Failed to load health centers. Please try again later.');
       toast.error('Failed to load hospitals');
-      
-      // Fallback to static data
-      setCenters([
-        {
-          name: "Kigali Central Hospital",
-          location: "Kigali",
-          sector: "Nyarugenge",
-          district: "Nyarugenge",
-          phone: "+250 782 749 660",
-          hours: "24/7 Emergency Services",
-          rating: 4.5,
-          distance: "2.5 km"
-        },
-        {
-          name: "King Faisal Hospital",
-          location: "Kacyiru",
-          sector: "Kacyiru",
-          district: "Gasabo",
-          phone: "3939",
-          hours: "Mon-Fri: 8AM-6PM",
-          rating: 4.8,
-          distance: "3.1 km"
-        },
-        {
-          name: "Rwanda Military Hospital",
-          location: "Kanombe",
-          sector: "Kanombe",
-          district: "Kicukiro",
-          phone: "4060",
-          hours: "24/7 Emergency Services",
-          rating: 4.3,
-          distance: "4.2 km"
-        }
-      ]);
+      setCenters([]);
     } finally {
       setLoading(false);
     }
+  };
+
+  const getUserLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error('Geolocation is not supported by your browser');
+      return;
+    }
+
+    setLocating(true);
+    toast.loading('Getting your location...');
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setUserCoordinates({ latitude, longitude });
+        setLocating(false);
+        toast.dismiss();
+        toast.success('Location detected!');
+        fetchNearbyHospitals(latitude, longitude);
+      },
+      (error) => {
+        setLocating(false);
+        toast.dismiss();
+        console.error('Geolocation error:', error);
+        
+        switch(error.code) {
+          case error.PERMISSION_DENIED:
+            toast.error('Location permission denied. Please enable location access.');
+            break;
+          case error.POSITION_UNAVAILABLE:
+            toast.error('Location information unavailable.');
+            break;
+          case error.TIMEOUT:
+            toast.error('Location request timed out.');
+            break;
+          default:
+            toast.error('Failed to get location.');
+        }
+        // Show sector modal as fallback
+        setShowSectorModal(true);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      }
+    );
+  };
+
+  const fetchNearbyHospitals = async (latitude, longitude) => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Call API with coordinates
+      const response = await api.health.getCenters();
+      const allHospitals = response.data.hospitals || [];
+      
+      // Calculate distance and sort by proximity
+      const hospitalsWithDistance = allHospitals.map(hospital => {
+        const distance = calculateDistance(
+          latitude,
+          longitude,
+          hospital.latitude || 0,
+          hospital.longitude || 0
+        );
+        return { ...hospital, distance: distance.toFixed(1) };
+      });
+
+      // Sort by distance and take closest ones
+      const sortedHospitals = hospitalsWithDistance
+        .filter(h => h.distance < 50) // Only show hospitals within 50km
+        .sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance));
+
+      setCenters(sortedHospitals);
+      
+      if (sortedHospitals.length === 0) {
+        toast.error('No hospitals found nearby. Try selecting your sector manually.');
+        setShowSectorModal(true);
+      } else {
+        toast.success(`Found ${sortedHospitals.length} nearby hospitals`);
+      }
+    } catch (err) {
+      console.error('Failed to fetch nearby hospitals:', err);
+      setError('Failed to load nearby hospitals.');
+      toast.error('Failed to load nearby hospitals');
+      setCenters([]);
+      setShowSectorModal(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Haversine formula to calculate distance between two coordinates
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371; // Earth's radius in kilometers
+    const dLat = toRadians(lat2 - lat1);
+    const dLon = toRadians(lon2 - lon1);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  };
+
+  const toRadians = (degrees) => {
+    return degrees * (Math.PI / 180);
   };
 
   const handleSelectSector = (location) => {
@@ -205,6 +283,10 @@ const HealthCenters = () => {
       setSelectedLocation(location);
       setShowSectorModal(false);
       fetchHealthCentersBySector(location.district, location.sector);
+    } else {
+      // Try auto-locate on first visit
+      setShowSectorModal(false);
+      getUserLocation();
     }
   }, []);
 
@@ -270,9 +352,57 @@ const HealthCenters = () => {
               <p>{selectedLocation.district} District</p>
             </div>
           </div>
-          <button onClick={() => setShowSectorModal(true)}>
-            Change Location
-          </button>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <button onClick={getUserLocation}>
+              <MapPin size={16} style={{ marginRight: '0.5rem' }} />
+              Auto-Locate
+            </button>
+            <button onClick={() => setShowSectorModal(true)}>
+              Change Location
+            </button>
+          </div>
+        </LocationBanner>
+      )}
+
+      {userCoordinates && !selectedLocation && (
+        <LocationBanner>
+          <div className="location-info">
+            <MapPin />
+            <div>
+              <h3>Your Location</h3>
+              <p>Showing nearby hospitals based on your current location</p>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <button onClick={getUserLocation}>
+              <Navigation size={16} style={{ marginRight: '0.5rem' }} />
+              Refresh
+            </button>
+            <button onClick={() => setShowSectorModal(true)}>
+              Select Manually
+            </button>
+          </div>
+        </LocationBanner>
+      )}
+
+      {!selectedLocation && !userCoordinates && !loading && (
+        <LocationBanner>
+          <div className="location-info">
+            <MapPin />
+            <div>
+              <h3>Find Nearby Hospitals</h3>
+              <p>Use your location or select your sector</p>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <button onClick={getUserLocation} disabled={locating}>
+              <Navigation size={16} style={{ marginRight: '0.5rem' }} />
+              {locating ? 'Locating...' : 'Auto-Locate'}
+            </button>
+            <button onClick={() => setShowSectorModal(true)}>
+              Select Sector
+            </button>
+          </div>
         </LocationBanner>
       )}
 
@@ -297,7 +427,7 @@ const HealthCenters = () => {
               {center.distance && (
                 <div className="info-item">
                   <Navigation />
-                  <span>{center.distance} away</span>
+                  <span>{center.distance} km away</span>
                 </div>
               )}
               <div className="info-item">
