@@ -62,6 +62,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyles />
+      <SpeedInsights />
       <ErrorBoundary>
         <AdminProvider>
           <UserProvider>
