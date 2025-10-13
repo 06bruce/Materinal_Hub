@@ -1,6 +1,6 @@
 {
   "name": "maternal-health-chatbot",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Kinyarwanda-first maternal health chatbot for Rwandan mothers",
   "private": true,
   "dependencies": {
