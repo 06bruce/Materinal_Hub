@@ -469,6 +469,22 @@ const LoginPage = () => {
             </button>
           </InputGroup>
 
+          {isLogin && (
+            <div style={{ textAlign: 'right', marginTop: '-8px' }}>
+              <Link 
+                to="/forgot-password" 
+                style={{
+                  color: 'var(--primary)',
+                  fontSize: 'var(--font-size-sm)',
+                  textDecoration: 'none',
+                  fontWeight: '500'
+                }}
+              >
+                {language === 'rw' ? 'Wibagiwe ijambo ryibanga?' : 'Forgot your password?'}
+              </Link>
+            </div>
+          )}
+
           {!isLogin && (
             <>
               <InputGroup>

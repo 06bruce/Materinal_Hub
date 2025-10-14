@@ -89,6 +89,8 @@ export const api = {
     getProfile: () => apiClient.get('/api/auth/me'),
     updateProfile: (profileData) => apiClient.put('/api/auth/profile', profileData),
     logout: () => apiClient.post('/api/auth/logout'),
+    forgotPassword: (data) => apiClient.post('/api/auth/forgot-password', data),
+    resetPassword: (data) => apiClient.post('/api/auth/reset-password', data),
   },
 
   // Chat endpoints

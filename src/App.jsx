@@ -27,6 +27,8 @@ import PrivacyPage from './pages/PrivacyPage';
 import TermsPage from './pages/TermsPage';
 import SupportPage from './pages/SupportPage';
 import FAQPage from './pages/FAQPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 
 // Admin Pages
 import AdminLoginPage from './pages/AdminLoginPage';
@@ -112,6 +114,8 @@ function App() {
                           <Route path="/mental-health" element={<MentalHealth />} />
                           <Route path="/about" element={<AboutPage />} />
                           <Route path="/login" element={<LoginPage />} />
+                          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                          <Route path="/reset-password" element={<ResetPasswordPage />} />
                           <Route path="/profile" element={<ProfilePage />} />
                           <Route path="/terms" element={<TermsPage />} />
                           <Route path="/faq" element={<FAQPage/>} />
