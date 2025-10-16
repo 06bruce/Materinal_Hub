@@ -134,6 +134,33 @@ export const api = {
     }
   },
 
+  // Appointments endpoints
+  appointments: {
+    // Get available slots for a center on a specific date
+    getSlots: (centerId, date, appointmentType) => {
+      const params = appointmentType ? { appointmentType } : {};
+      return apiClient.get(`/api/appointments/slots/${centerId}/${date}`, { params });
+    },
+    
+    // Get all appointment types with their configurations
+    getTypes: () => apiClient.get('/api/appointments/types'),
+    
+    // Book a new appointment
+    book: (appointmentData) => apiClient.post('/api/appointments', appointmentData),
+    
+    // Get user's appointments
+    getUserAppointments: () => apiClient.get('/api/appointments/user'),
+    
+    // Get single appointment details
+    getById: (appointmentId) => apiClient.get(`/api/appointments/${appointmentId}`),
+    
+    // Update/reschedule appointment
+    update: (appointmentId, data) => apiClient.put(`/api/appointments/${appointmentId}`, data),
+    
+    // Cancel appointment
+    cancel: (appointmentId) => apiClient.delete(`/api/appointments/${appointmentId}`),
+  },
+
   // Health check
   healthCheck: () => apiClient.get('/health'),
 };

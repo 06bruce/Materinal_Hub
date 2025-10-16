@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { X, Calendar, Clock, User, MapPin } from 'lucide-react';
+import { X, Calendar, Clock, User, MapPin, Info, AlertCircle } from 'lucide-react';
 import { api } from '../utils/api';
 import toast from 'react-hot-toast';
 
@@ -120,6 +120,92 @@ const SubmitButton = styled.button`
   }
 `;
 
+const SlotInfo = styled.div`
+  background: var(--blue-50);
+  border: 1px solid var(--blue-200);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  margin-bottom: 1rem;
+  
+  .info-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--blue-700);
+  }
+  
+  .info-content {
+    font-size: 0.875rem;
+    color: var(--blue-600);
+    line-height: 1.4;
+  }
+`;
+
+const SlotGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  
+  .slot-item {
+    padding: 0.5rem;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-sm);
+    text-align: center;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: white;
+    
+    &:hover {
+      border-color: var(--primary);
+      background: var(--primary-50);
+    }
+    
+    &.selected {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: white;
+    }
+    
+    &.unavailable {
+      background: var(--gray-100);
+      color: var(--gray-400);
+      cursor: not-allowed;
+      border-color: var(--gray-200);
+    }
+  }
+`;
+
+const ErrorMessage = styled.div`
+  background: var(--red-50);
+  border: 1px solid var(--red-200);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--red-700);
+  font-size: 0.875rem;
+`;
+
+const LoadingSpinner = styled.div`
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--gray-300);
+  border-radius: 50%;
+  border-top-color: var(--primary);
+  animation: spin 1s ease-in-out infinite;
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+`;
+
 const AppointmentModal = ({ 
   centerId, 
   centerName, 
@@ -132,15 +218,36 @@ const AppointmentModal = ({
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
   const [availableSlots, setAvailableSlots] = useState([]);
+  const [appointmentTypes, setAppointmentTypes] = useState([]);
+  const [slotInfo, setSlotInfo] = useState(null);
+  const [error, setError] = useState(null);
   
-  const fetchSlots = async (selectedDate) => {
+  // Load appointment types on component mount
+  useEffect(() => {
+    const loadAppointmentTypes = async () => {
+      try {
+        const response = await api.appointments.getTypes();
+        setAppointmentTypes(response.data.appointmentTypes || []);
+      } catch (err) {
+        console.error('Failed to load appointment types:', err);
+      }
+    };
+    loadAppointmentTypes();
+  }, []);
+  
+  const fetchSlots = async (selectedDate, appointmentType = reason) => {
     try {
       setLoading(true);
-      const response = await api.appointments.getSlots(centerId, selectedDate);
+      setError(null);
+      const response = await api.appointments.getSlots(centerId, selectedDate, appointmentType);
       setAvailableSlots(response.data.slots || []);
+      setSlotInfo(response.data.slotInfo);
     } catch (err) {
-      toast.error('Failed to fetch available slots');
+      const errorMessage = err.response?.data?.error || 'Failed to fetch available slots';
+      setError(errorMessage);
       setAvailableSlots([]);
+      setSlotInfo(null);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -151,7 +258,16 @@ const AppointmentModal = ({
     setDate(selectedDate);
     setTime(''); // Reset time when date changes
     if (selectedDate) {
-      fetchSlots(selectedDate);
+      fetchSlots(selectedDate, reason);
+    }
+  };
+
+  const handleReasonChange = (e) => {
+    const newReason = e.target.value;
+    setReason(newReason);
+    setTime(''); // Reset time when appointment type changes
+    if (date) {
+      fetchSlots(date, newReason);
     }
   };
 
@@ -197,6 +313,44 @@ const AppointmentModal = ({
         </h2>
         
         <form onSubmit={handleSubmit}>
+          {error && (
+            <ErrorMessage>
+              <AlertCircle size={16} />
+              {error}
+            </ErrorMessage>
+          )}
+
+          <FormGroup>
+            <label htmlFor="appointment-reason">
+              <User size={16} style={{ marginRight: '0.5rem' }} />
+              Reason for Visit
+            </label>
+            <select 
+              id="appointment-reason"
+              value={reason}
+              onChange={handleReasonChange}
+              required
+              disabled={loading}
+            >
+              {appointmentTypes.length > 0 ? (
+                appointmentTypes.map(type => (
+                  <option key={type.type} value={type.type}>
+                    {type.type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())} ({type.duration}min)
+                  </option>
+                ))
+              ) : (
+                <>
+                  <option value="prenatal">Prenatal Checkup</option>
+                  <option value="postpartum">Postpartum Visit</option>
+                  <option value="vaccination">Vaccination</option>
+                  <option value="mental_health">Mental Health Consultation</option>
+                  <option value="emergency">Emergency</option>
+                  <option value="therapy">Therapy</option>
+                </>
+              )}
+            </select>
+          </FormGroup>
+
           <FormGroup>
             <label htmlFor="appointment-date">
               <Calendar size={16} style={{ marginRight: '0.5rem' }} />
@@ -213,45 +367,50 @@ const AppointmentModal = ({
             />
           </FormGroup>
           
+          {slotInfo && (
+            <SlotInfo>
+              <div className="info-header">
+                <Info size={16} />
+                Appointment Information
+              </div>
+              <div className="info-content">
+                <strong>Duration:</strong> {slotInfo.duration} minutes<br/>
+                <strong>Type:</strong> {slotInfo.description}<br/>
+                {slotInfo.requiresSpecialist && <><strong>Note:</strong> Specialist consultation required</>}
+              </div>
+            </SlotInfo>
+          )}
+          
           <FormGroup>
             <label htmlFor="appointment-time">
               <Clock size={16} style={{ marginRight: '0.5rem' }} />
-              Time Slot
+              Available Time Slots
+              {loading && <LoadingSpinner style={{ marginLeft: '0.5rem' }} />}
             </label>
-            <select 
-              id="appointment-time"
-              value={time}
-              onChange={(e) => setTime(e.target.value)}
-              required
-              disabled={!date || availableSlots.length === 0 || loading}
-            >
-              <option value="">{availableSlots.length ? 'Select a time' : 'No slots available'}</option>
-              {availableSlots.map(slot => (
-                <option key={slot} value={slot}>
-                  {slot}
-                </option>
-              ))}
-            </select>
-          </FormGroup>
-          
-          <FormGroup>
-            <label htmlFor="appointment-reason">
-              <User size={16} style={{ marginRight: '0.5rem' }} />
-              Reason for Visit
-            </label>
-            <select 
-              id="appointment-reason"
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              required
-              disabled={loading}
-            >
-              <option value="prenatal">Prenatal Checkup</option>
-              <option value="postpartum">Postpartum Visit</option>
-              <option value="vaccination">Vaccination</option>
-              <option value="mental_health">Mental Health Consultation</option>
-              <option value="other">Other</option>
-            </select>
+            
+            {availableSlots.length > 0 ? (
+              <SlotGrid>
+                {availableSlots.map(slot => (
+                  <div
+                    key={slot}
+                    className={`slot-item ${time === slot ? 'selected' : ''}`}
+                    onClick={() => setTime(slot)}
+                  >
+                    {slot}
+                  </div>
+                ))}
+              </SlotGrid>
+            ) : date && !loading ? (
+              <div style={{ 
+                padding: '1rem', 
+                textAlign: 'center', 
+                color: 'var(--gray-500)',
+                background: 'var(--gray-50)',
+                borderRadius: 'var(--radius-md)'
+              }}>
+                No available slots for this date and appointment type
+              </div>
+            ) : null}
           </FormGroup>
           
           <FormGroup>
@@ -280,7 +439,7 @@ const AppointmentModal = ({
               type="submit" 
               disabled={loading || !date || !time}
             >
-              {loading ? 'Processing...' : 'Confirm Appointment'}
+              {loading ? 'Processing...' : `Book ${reason.replace('_', ' ')} Appointment`}
             </SubmitButton>
           </ButtonGroup>
         </form>
