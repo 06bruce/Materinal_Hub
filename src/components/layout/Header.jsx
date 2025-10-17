@@ -20,10 +20,11 @@ const HeaderContainer = styled.header`
   left: 0;
   right: 0;
   z-index: 1000;
-  background: rgba(241, 171, 171, 0.92);
-  backdrop-filter: blur(30%);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--gray-200);
   padding: 0 var(--spacing-4);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 `;
 
 const HeaderContent = styled.div`

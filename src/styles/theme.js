@@ -2,18 +2,18 @@
 export const theme = {
   // Color Palette
   colors: {
-    // Primary Colors (Maternal Health Theme)
+    // Primary Colors (Maternal Health Theme) - Softer Palette
     primary: {
-      main: '#f05d5d',
-      light: '#ff8a8a',
-      dark: '#c73838',
-      lighter: '#ffe5e5',
+      main: '#ec89b6',
+      light: '#f5c5dd',
+      dark: '#d66a9a',
+      lighter: '#fceef5',
     },
     secondary: {
-      main: '#ff69b4',
-      light: '#ffb3d9',
-      dark: '#cc4490',
-      lighter: '#ffe6f5',
+      main: '#f8a5c2',
+      light: '#fcd1e0',
+      dark: '#e07a9f',
+      lighter: '#fef0f5',
     },
     
     // Neutral Colors
@@ -64,8 +64,8 @@ export const theme = {
     background: {
       default: '#ffffff',
       paper: '#f9fafb',
-      gradient: 'linear-gradient(135deg, #f05d5dff 0%, rgba(255, 105, 180, 0.42) 100%)',
-      gradientAlt: 'linear-gradient(135deg, #ff69b4 0%, #f05d5d 100%)',
+      gradient: 'linear-gradient(135deg, #ec89b6 0%, #f8a5c2 50%, #fcd1e0 100%)',
+      gradientAlt: 'linear-gradient(135deg, #f5c5dd 0%, #ec89b6 100%)',
     },
   },
   

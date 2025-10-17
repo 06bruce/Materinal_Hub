@@ -31,12 +31,12 @@ const HeroSection = styled.section`
   /* Background Image */
   background: url('https://media.istockphoto.com/id/2158853819/photo/happy-family-embracing-in-nature.jpg?s=612x612&w=0&k=20&c=EHRo4237ZBdKJwCzFm3r90OUriXNMTvtwZGZh1-2RIs=') center/cover repeat;
 
-  /* Dark overlay with 45% opacity */
+  /* Dark overlay for better text readability */
   &::before {
     content: "";
     position: absolute;
     inset: 0;
-    background: rgba(8, 4, 4, 0.69); /* adjust opacity */
+    background: rgba(0, 0, 0, 0.55);
     z-index: 1;
   }
 
@@ -59,6 +59,7 @@ const HeroTitle = styled(motion.h1)`
   font-weight: 700;
   margin-bottom: var(--spacing-6);
   line-height: 1.2;
+  color: var(--white);
   
   @media (max-width: 768px) {
     font-size: var(--font-size-3xl);
@@ -68,10 +69,11 @@ const HeroTitle = styled(motion.h1)`
 const HeroSubtitle = styled(motion.p)`
   font-size: var(--font-size-xl);
   margin-bottom: var(--spacing-8);
-  opacity: 0.9;
+  opacity: 0.95;
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
+  color: var(--white);
 `;
 
 const HeroButtons = styled(motion.div)`

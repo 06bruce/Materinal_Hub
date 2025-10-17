@@ -5,14 +5,14 @@
 }
 
 :root {
-  /* Color Palette */
-  --primary: #E91E63;
-  --primary-light: #F8BBD9;
-  --primary-dark: #C2185B;
-  --secondary: #4CAF50;
-  --secondary-light: #A5D6A7;
-  --accent: #FF9800;
-  --accent-light: #FFE0B2;
+  /* Color Palette - Softer, More Pleasant */
+  --primary: #ec89b6;
+  --primary-light: #f5c5dd;
+  --primary-dark: #d66a9a;
+  --secondary: #6fbf73;
+  --secondary-light: #b8e3ba;
+  --accent: #ffb366;
+  --accent-light: #ffe9cc;
   
   /* Neutral Colors */
   --white: #FFFFFF;
