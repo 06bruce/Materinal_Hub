@@ -17,13 +17,14 @@ const NavigationContainer = styled.nav`
   left: 0;
   right: 0;
   z-index: 1000;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(230, 183, 183, 0.45);
   height: 60px;
   width: 100%
   border-top: 1px solid var(--gray-200);
   border-radius: 20px 20px 20px 20px;
   padding: var(--spacing-3) var(--spacing-5);
   box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+  
   backdrop-filter: blur(10px);
   transition: all 0.3s ease-in-out;
   margin-bottom: 10px;

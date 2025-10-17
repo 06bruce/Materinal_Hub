@@ -24,6 +24,7 @@ import { useUser } from '../context/UserContext';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import AppointmentCalendar from '../components/AppointmentCalendar';
+import EmergencyButton from '../components/EmergencyButton';
 import { api } from '../utils/api';
 
 const ProfileContainer = styled.div`
@@ -38,6 +39,8 @@ const ProfileHeader = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: var(--spacing-8);
+  gap: var(--spacing-4);
+  flex-wrap: wrap;
 `;
 
 const HeaderContent = styled.div`
@@ -473,10 +476,13 @@ const ProfilePage = () => {
           <ProfileSubtitle>Manage your account and pregnancy information</ProfileSubtitle>
         </HeaderContent>
 
-        <LogoutButton onClick={handleLogout}>
-          <LogOut size={16} />
-          Logout
-        </LogoutButton>
+        <div style={{ display: 'flex', gap: 'var(--spacing-3)', alignItems: 'center' }}>
+          <EmergencyButton />
+          <LogoutButton onClick={handleLogout}>
+            <LogOut size={16} />
+            Logout
+          </LogoutButton>
+        </div>
       </ProfileHeader>
 
       <ProfileCard

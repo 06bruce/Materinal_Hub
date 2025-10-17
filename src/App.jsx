@@ -41,12 +41,14 @@ import AdminAppointments from './pages/AdminAppointments';
 import AdminSettings from './pages/AdminSettings';
 import AdminLayout from './components/layout/AdminLayout';
 import AdminRoute from './components/AdminRoute';
+import ProtectedRoute from './components/ProtectedRoute';
 
 //Vercel Insight
 import { SpeedInsights } from "@vercel/speed-insights/react"
 import { ChatProvider } from './context/ChatContext';
 import { UserProvider } from './context/UserContext';
 import { AdminProvider } from './context/AdminContext';
+import { EmergencyProvider } from './context/EmergencyContext';
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -68,8 +70,9 @@ function App() {
       <ErrorBoundary>
         <AdminProvider>
           <UserProvider>
-            <ChatProvider>
-              <Routes>
+            <EmergencyProvider>
+              <ChatProvider>
+                <Routes>
                 {/* Admin Routes */}
                 <Route path="/admin/login" element={<AdminLoginPage />} />
                 <Route path="/admin/*" element={
@@ -106,21 +109,48 @@ function App() {
                     <MainContent>
                       <ErrorBoundary>
                         <Routes>
+                          {/* Public Routes */}
                           <Route path="/" element={<HomePage />} />
-                          <Route path="/chat" element={<ChatPage />} />
-                          <Route path="/pregnancy-tracker" element={<PregnancyTracker />} />
-                          <Route path="/dads-corner" element={<DadsCorner />} />
-                          <Route path="/health-centers" element={<HealthCenters />} />
-                          <Route path="/mental-health" element={<MentalHealth />} />
                           <Route path="/about" element={<AboutPage />} />
                           <Route path="/login" element={<LoginPage />} />
                           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                           <Route path="/reset-password" element={<ResetPasswordPage />} />
-                          <Route path="/profile" element={<ProfilePage />} />
                           <Route path="/terms" element={<TermsPage />} />
                           <Route path="/faq" element={<FAQPage/>} />
                           <Route path="/privacy" element={<PrivacyPage/>} />
                           <Route path="/support" element={<SupportPage/>} />
+                          
+                          {/* Protected Routes - Require Authentication */}
+                          <Route path="/chat" element={
+                            <ProtectedRoute>
+                              <ChatPage />
+                            </ProtectedRoute>
+                          } />
+                          <Route path="/pregnancy-tracker" element={
+                            <ProtectedRoute>
+                              <PregnancyTracker />
+                            </ProtectedRoute>
+                          } />
+                          <Route path="/dads-corner" element={
+                            <ProtectedRoute>
+                              <DadsCorner />
+                            </ProtectedRoute>
+                          } />
+                          <Route path="/health-centers" element={
+                            <ProtectedRoute>
+                              <HealthCenters />
+                            </ProtectedRoute>
+                          } />
+                          <Route path="/mental-health" element={
+                            <ProtectedRoute>
+                              <MentalHealth />
+                            </ProtectedRoute>
+                          } />
+                          <Route path="/profile" element={
+                            <ProtectedRoute>
+                              <ProfilePage />
+                            </ProtectedRoute>
+                          } />
                         </Routes>
                       </ErrorBoundary>
                     </MainContent>
@@ -128,8 +158,9 @@ function App() {
                     <Footer />
                   </AppContainer>
                 } />
-              </Routes>
-            </ChatProvider>
+                </Routes>
+              </ChatProvider>
+            </EmergencyProvider>
           </UserProvider>
         </AdminProvider>
       </ErrorBoundary>

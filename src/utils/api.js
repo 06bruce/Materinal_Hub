@@ -161,6 +161,13 @@ export const api = {
     cancel: (appointmentId) => apiClient.delete(`/api/appointments/${appointmentId}`),
   },
 
+  // Emergency endpoints
+  emergency: {
+    sendAlert: (emergencyData) => apiClient.post('/api/emergency/alert', emergencyData),
+    getStatus: (emergencyId) => apiClient.get(`/api/emergency/${emergencyId}`),
+    cancel: (emergencyId) => apiClient.delete(`/api/emergency/${emergencyId}`),
+  },
+
   // Health check
   healthCheck: () => apiClient.get('/health'),
 };

@@ -12,6 +12,8 @@ import {
   Shield
 } from 'lucide-react';
 import { useChat } from '../context/ChatContext';
+import { useUser } from '../context/UserContext';
+import EmergencyButton from '../components/EmergencyButton';
 
 const HomeContainer = styled.div`
   min-height: 100vh;
@@ -81,6 +83,7 @@ const HeroButtons = styled(motion.div)`
   gap: var(--spacing-4);
   justify-content: center;
   flex-wrap: wrap;
+  align-items: center;
 `;
 
 const HeroButton = styled(Link)`
@@ -193,12 +196,14 @@ const FeatureCard = styled(motion.div)`
 
 const HomePage = () => {
   const { language } = useChat();
+  const { isAuthenticated } = useUser();
 
   const content = {
     rw: {
       title: "Turagufasha Kugenzura ubuzima bwawe n'ubwa bana bawe",
-      subtitle: "Uburambe bw'ubuzima bwawe n'ubw'abana bawe — buri gihe, aho aho, mu rurimi rwawe.",
-      startChat: "Tangira kuvugana",
+      subtitle: "Fungura konti kugira ngo ubone serivisi zuzuye z'ubuzima bwawe — buri gihe, aho aho, mu rurimi rwawe.",
+      startChat: "Injira/Iyandikishe",
+      startChatAuth: "Tangira kuvugana",
       learnMore: "Menya byinshi",
       features: [
         {
@@ -247,8 +252,9 @@ const HomePage = () => {
     },
     en: {
       title: "Your trusted pregnancy and postpartum guide",
-      subtitle: "Your trusted pregnancy and postpartum guide — anytime, anywhere, in your language.",
-      startChat: "Start Chatting",
+      subtitle: "Create an account to access full health services — anytime, anywhere, in your language.",
+      startChat: "Login/Sign Up",
+      startChatAuth: "Start Chatting",
       learnMore: "Learn More",
       features: [
         {
@@ -324,9 +330,10 @@ const HomePage = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            <HeroButton to="/chat" className="primary">
+            {isAuthenticated && <EmergencyButton />}
+            <HeroButton to={isAuthenticated ? "/chat" : "/login"} className="primary">
               <MessageCircle size={20} />
-              {currentContent.startChat}
+              {isAuthenticated ? currentContent.startChatAuth : currentContent.startChat}
             </HeroButton>
             <HeroButton to="/about" className="secondary">
               <ArrowRight size={20} />
