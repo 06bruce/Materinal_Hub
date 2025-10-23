@@ -30,6 +30,46 @@ export const EmergencyProvider = ({ children }) => {
     }
   }, []);
 
+  // Poll emergency status when active
+  useEffect(() => {
+    if (!emergencyActive || !emergencyData?.id) return;
+
+    const checkStatus = async () => {
+      try {
+        const response = await api.emergency.getStatus(emergencyData.id);
+        const emergency = response.data.emergency;
+
+        // Update if hospital responded
+        if (emergency.status === 'responded' && emergency.respondedHospital) {
+          if (!respondedHospital || respondedHospital.hospitalId !== emergency.respondedHospital.hospitalId) {
+            hospitalResponded(emergency.respondedHospital);
+          }
+        }
+
+        // Handle if emergency was cancelled from another device/session
+        if (emergency.status === 'cancelled') {
+          setEmergencyActive(false);
+          setEmergencyData(null);
+          setRespondedHospital(null);
+          setAlertedHospitals([]);
+          localStorage.removeItem('activeEmergency');
+          toast.info('Emergency was cancelled');
+        }
+      } catch (error) {
+        console.error('Error checking emergency status:', error);
+        // Don't show error toast to avoid spamming user
+      }
+    };
+
+    // Check immediately
+    checkStatus();
+
+    // Then poll every 10 seconds
+    const interval = setInterval(checkStatus, 10000);
+
+    return () => clearInterval(interval);
+  }, [emergencyActive, emergencyData?.id, respondedHospital]);
+
   const sendEmergencyAlert = async (userData, userLocation) => {
     try {
       // Send emergency alert to backend
@@ -86,13 +126,24 @@ export const EmergencyProvider = ({ children }) => {
     toast.success(`${hospital.name} has responded to your emergency!`);
   };
 
-  const cancelEmergency = () => {
-    setEmergencyActive(false);
-    setEmergencyData(null);
-    setRespondedHospital(null);
-    setAlertedHospitals([]);
-    localStorage.removeItem('activeEmergency');
-    toast.success('Emergency alert cancelled');
+  const cancelEmergency = async () => {
+    try {
+      // Call backend to cancel emergency
+      if (emergencyData?.id) {
+        await api.emergency.cancel(emergencyData.id);
+      }
+      
+      // Update frontend state
+      setEmergencyActive(false);
+      setEmergencyData(null);
+      setRespondedHospital(null);
+      setAlertedHospitals([]);
+      localStorage.removeItem('activeEmergency');
+      toast.success('Emergency alert cancelled');
+    } catch (error) {
+      console.error('Error cancelling emergency:', error);
+      toast.error('Failed to cancel emergency. Please try again.');
+    }
   };
 
   const value = {

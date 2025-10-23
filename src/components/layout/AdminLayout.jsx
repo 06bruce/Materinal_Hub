@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { LayoutDashboard, Users, Heart, LogOut, Menu, X, UserPlus, Calendar, Settings } from 'lucide-react';
+import { LayoutDashboard, Users, Heart, LogOut, Menu, X, UserPlus, Calendar, Settings, AlertTriangle } from 'lucide-react';
 import { useAdmin } from '../../context/AdminContext';
 
 const Container = styled.div`
@@ -216,6 +216,11 @@ const AdminLayout = ({ children }) => {
           <NavItem to="/admin/appointments" onClick={() => setSidebarOpen(false)}>
             <Calendar size={20} />
             <span>Appointments</span>
+          </NavItem>
+          
+          <NavItem to="/admin/emergencies" onClick={() => setSidebarOpen(false)}>
+            <AlertTriangle size={20} />
+            <span>Emergencies</span>
           </NavItem>
           
           <NavItem to="/admin/users" onClick={() => setSidebarOpen(false)}>

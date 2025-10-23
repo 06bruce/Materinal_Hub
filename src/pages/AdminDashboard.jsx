@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { Users, UserCheck, Heart, Activity, TrendingUp, Calendar, Clock } from 'lucide-react';
+import { Users, UserCheck, Heart, Activity, TrendingUp, Calendar, Clock, AlertTriangle } from 'lucide-react';
 import { getAnalytics } from '../utils/adminApi';
 import { api } from '../utils/api';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -218,7 +218,7 @@ const AdminDashboard = () => {
 
   if (!analytics || !appointmentStats) return null;
 
-  const { totalUsers, genderDistribution, pregnancyStats, userActivity } = analytics;
+  const { totalUsers, genderDistribution, pregnancyStats, userActivity, emergencyStats } = analytics;
 
   return (
     <Container>
@@ -285,6 +285,26 @@ const AdminDashboard = () => {
           <StatContent>
             <div className="label">Upcoming Appointments</div>
             <div className="value">{appointmentStats.upcoming}</div>
+          </StatContent>
+        </StatCard>
+
+        <StatCard clickable onClick={() => navigate('/admin/emergencies')}>
+          <IconWrapper bg="#fee2e2" color="#dc2626">
+            <AlertTriangle size={28} />
+          </IconWrapper>
+          <StatContent>
+            <div className="label">Total Emergencies</div>
+            <div className="value">{emergencyStats?.total || 0}</div>
+          </StatContent>
+        </StatCard>
+
+        <StatCard clickable onClick={() => navigate('/admin/emergencies')}>
+          <IconWrapper bg="#fef3c7" color="#d97706">
+            <Clock size={28} />
+          </IconWrapper>
+          <StatContent>
+            <div className="label">Pending Emergencies</div>
+            <div className="value">{emergencyStats?.pending || 0}</div>
           </StatContent>
         </StatCard>
 

@@ -38,6 +38,7 @@ import AdminUserEdit from './pages/AdminUserEdit';
 import AdminPregnancy from './pages/AdminPregnancy';
 import AdminRegister from './pages/AdminRegister';
 import AdminAppointments from './pages/AdminAppointments';
+import AdminEmergencies from './pages/AdminEmergencies';
 import AdminSettings from './pages/AdminSettings';
 import AdminLayout from './components/layout/AdminLayout';
 import AdminRoute from './components/AdminRoute';
@@ -81,6 +82,7 @@ function App() {
                       <Routes>
                         <Route path="dashboard" element={<AdminDashboard />} />
                         <Route path="appointments" element={<AdminAppointments />} />
+                        <Route path="emergencies" element={<AdminEmergencies />} />
                         <Route path="users" element={<AdminUsers />} />
                         <Route path="users/:id/edit" element={<AdminUserEdit />} />
                         <Route path="pregnancy" element={<AdminPregnancy />} />

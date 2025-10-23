@@ -1,15 +1,6 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
-import LoadingSpinner from './LoadingSpinner';
-import styled from 'styled-components';
-
-const LoadingContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-`;
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated } = useUser();

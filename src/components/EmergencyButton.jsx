@@ -253,7 +253,6 @@ const EmergencyButton = ({ compact = false }) => {
     emergencyActive, 
     emergencyData, 
     respondedHospital,
-    alertedHospitals,
     sendEmergencyAlert, 
     cancelEmergency 
   } = useEmergency();
@@ -323,7 +322,15 @@ const EmergencyButton = ({ compact = false }) => {
       if (navigator.geolocation) {
         try {
           const position = await new Promise((resolve, reject) => {
-            navigator.geolocation.getCurrentPosition(resolve, reject);
+            navigator.geolocation.getCurrentPosition(
+              resolve, 
+              reject,
+              { 
+                timeout: 10000, 
+                enableHighAccuracy: true,
+                maximumAge: 300000 // Accept cached location up to 5 minutes old
+              }
+            );
           });
           userLocation = {
             lat: position.coords.latitude,
@@ -331,7 +338,26 @@ const EmergencyButton = ({ compact = false }) => {
           };
         } catch (error) {
           console.error('Error getting location:', error);
+          
+          // Show user-friendly error messages based on error code
+          const errorMessages = {
+            1: 'Please allow location access to send accurate emergency alerts',
+            2: 'Location unavailable. Emergency will be sent without location.',
+            3: 'Location request timed out. Emergency will be sent without location.'
+          };
+          
+          toast.error(errorMessages[error.code] || 'Could not get your location');
+          
+          // Continue without location if permission denied or error
+          if (error.code === 1) {
+            // Permission denied - inform user but don't send
+            setLoading(false);
+            return;
+          }
+          // For other errors, continue without location
         }
+      } else {
+        toast.warning('Geolocation not supported. Emergency will be sent without location.');
       }
 
       await sendEmergencyAlert(user, userLocation);
@@ -339,6 +365,7 @@ const EmergencyButton = ({ compact = false }) => {
       setShowModal(true);
     } catch (error) {
       console.error('Error sending emergency alert:', error);
+      toast.error('Failed to send emergency alert. Please try again.');
     } finally {
       setLoading(false);
     }

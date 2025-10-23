@@ -131,6 +131,14 @@ export const api = {
       getById: (appointmentId) => apiClient.get(`/api/admin/appointments/${appointmentId}`),
       update: (appointmentId, data) => apiClient.put(`/api/admin/appointments/${appointmentId}`, data),
       delete: (appointmentId) => apiClient.delete(`/api/admin/appointments/${appointmentId}`)
+    },
+    
+    // Emergencies
+    emergencies: {
+      getAll: (params) => apiClient.get('/api/admin/emergencies', { params }),
+      getById: (emergencyId) => apiClient.get(`/api/admin/emergencies/${emergencyId}`),
+      update: (emergencyId, data) => apiClient.put(`/api/admin/emergencies/${emergencyId}`, data),
+      delete: (emergencyId) => apiClient.delete(`/api/admin/emergencies/${emergencyId}`)
     }
   },
 
