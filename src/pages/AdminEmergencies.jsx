@@ -1,19 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import {
   AlertTriangle,
-  Edit,
   Trash2,
-  Filter,
-  Search,
   User,
   MapPin,
   Clock,
   Phone,
   CheckCircle,
-  XCircle,
-  AlertCircle,
-  Hospital
+  Building2
 } from 'lucide-react';
 import { api } from '../utils/api';
 import toast from 'react-hot-toast';
@@ -275,11 +270,7 @@ const AdminEmergencies = () => {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
 
-  useEffect(() => {
-    fetchEmergencies();
-  }, [filter]);
-
-  const fetchEmergencies = async () => {
+  const fetchEmergencies = useCallback(async () => {
     try {
       setLoading(true);
       const params = filter !== 'all' ? { status: filter } : {};
@@ -292,7 +283,11 @@ const AdminEmergencies = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filter]);
+
+  useEffect(() => {
+    fetchEmergencies();
+  }, [fetchEmergencies]);
 
   const handleResolve = async (emergencyId) => {
     try {
@@ -434,7 +429,7 @@ const AdminEmergencies = () => {
                 )}
                 {emergency.respondedHospital && (
                   <div className="detail-item">
-                    <Hospital size={16} />
+                    <Building2 size={16} />
                     <div>
                       <div className="label">Responded By</div>
                       <div className="value">{emergency.respondedHospital.name}</div>
@@ -446,7 +441,7 @@ const AdminEmergencies = () => {
               {emergency.hospitals && emergency.hospitals.length > 0 && (
                 <HospitalsList>
                   <h4>
-                    <Hospital size={16} />
+                    <Building2 size={16} />
                     Alerted Hospitals ({emergency.hospitals.length})
                   </h4>
                   {emergency.hospitals.map((hospital, index) => (

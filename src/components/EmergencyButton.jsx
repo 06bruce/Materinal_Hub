@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertTriangle, Phone, X, MapPin, Clock, CheckCircle } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { useUser } from '../context/UserContext';
 import { useEmergency } from '../context/EmergencyContext';
 import { useChat } from '../context/ChatContext';
